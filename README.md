@@ -7,8 +7,14 @@ I'm a mess and I don't use git or any version control at all, but I'll upload th
 <?
 
 $db_host="localhost";
+
+
 $db_name="YOURDBNAME";
+
+
 $db_password="YOURDBPASSWORD";
+
+
 $db_user="YOURDBUSER";
 
 
