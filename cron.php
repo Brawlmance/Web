@@ -8,7 +8,7 @@ $db->query("DELETE FROM playerlegends WHERE day<$day-3"); // Delete players not 
 $apicalls=0;
 $realapicalls=0;
 function api_call($url) {
-	global $apicalls, $realapicalls;
+	global $apicalls, $realapicalls, $BRAWLHALLAAPIKEY;
 	$apicalls++;
 	$realapicalls++;
 	if($apicalls>=8) { sleep(1); $apicalls=1; }// Don't be too greedy about the 10 request/second limit
