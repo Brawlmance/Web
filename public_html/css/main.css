@@ -1,0 +1,196 @@
+/*! HTML5 Boilerplate v5.0 | MIT License | http://h5bp.com/ */
+html {
+    color: #ccc;
+    font-size: 1em;
+    line-height: 1.4;
+	background: #444349;
+	background-image: url('/img/bgpattern.png');
+}
+a {
+	color: #D7D000;
+	text-decoration: none;
+}
+a:hover {
+	color: #D7D0A0;
+	text-decoration: none;
+}
+
+::-moz-selection {
+    background: #b3d4fc;
+    text-shadow: none;
+}
+::selection {
+    background: #b3d4fc;
+    text-shadow: none;
+}
+#main {
+	width: 100%;
+	max-width: 1024px;
+	margin: 0 auto;
+	background: rgb(68, 67, 73);
+	background: rgba(255, 255, 255, 0.08);
+	box-shadow: 0 0 4px black;
+}
+header {
+	width: 100%;
+	background: rgba(0, 0, 0, 0.08);
+	border-bottom: 1px solid black;
+    padding: 7px 0;
+    margin-bottom: 7px;
+    overflow: auto;
+}
+header div {
+	box-sizing: border-box;
+	float: left;
+}
+#menu {
+	width: 20%;
+}
+#menu ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+#menu li {
+    display: block;
+    float: left;
+    padding: 0 10px;
+    font-size: 18px;
+}
+#aggregationstatus {
+	width: 60%;
+	font-size: 15px;
+	text-align: center;
+}
+#socialmenu {
+	width: 20%;
+	text-align: right;
+	padding-right: 1rem;
+	float: right;
+}
+@media (max-width: 1023px) {
+	#aggregationstatus {
+		width: 100%;
+		float: right;
+		margin-top: 10px;
+	}
+	#menu, #socialmenu {
+		width: 50%;
+	}
+}
+#content {
+	padding: 0 10px;
+}
+
+
+/* main */
+.tops {
+	text-align: center;
+	margin-bottom: 15px;
+}
+.tops>div {
+	width: 45%;
+	display: inline-block;
+	text-align: center;
+}
+.tops table {
+	width: 90%;
+}
+@media (max-width: 1023px) {
+	.tops>div {
+		width: 100%;
+	}
+}
+
+.grid {
+	overflow: auto;
+    text-align: center;
+}
+.card {
+	width: 230px;
+    display: inline-block;
+	padding: 5px;
+}
+.card>img {
+	width: 100px;
+	height: 100px;
+}
+.card>p {
+	width: 100%;
+}
+.card .stats {
+	width: 100%;
+}
+.card .stats>div{
+	width: 20%;
+	display: inline-block;
+}
+.card .stats>div:before {
+	display: inline-block;
+	content: " ";
+	height: 18px;
+	width: 20px;
+    background-repeat: no-repeat;
+    background-position: center left;
+    position: relative;
+    top: 3px;
+}
+.card .strength:before {
+	background-image: url('/img/strength.png');
+}
+.card .dexterity:before {
+	background-image: url('/img/dexterity.png');
+}
+.card .defense:before {
+	background-image: url('/img/defense.png');
+}
+.card .speed:before {
+	background-image: url('/img/speed.png');
+}
+.card .statistical {
+	width: 100%;
+}
+.card .statistical>div{
+	width: 100%;
+	display: inline-block;
+}
+.card p {
+	margin: 2px 0;
+}
+.card .damagedealt, .card .matchtime {
+	font-size: 0.75em;
+}
+
+.streams>div {
+	width: 33.33%;
+	display:inline-block;
+    text-align: center;
+    padding: 0 4%;
+    box-sizing: border-box;
+}
+@media (max-width: 1023px) {
+	.streams>div {
+		width: 100%;
+		margin-bottom: 15px;
+	}
+}
+.streams>div img {
+	width: 100%;
+}
+.streams>div span.name {
+    display: block;
+    float: left;
+}
+.streams>div span.viewers {
+    display: block;
+    float: right;
+}
+footer {
+	color: #eee;
+	font-size: 13px;
+	text-align: center;
+	padding-top: 30px;
+	padding-bottom: 5px;
+	width: 80%;
+	margin: 0 auto;
+}
