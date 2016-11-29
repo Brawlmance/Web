@@ -65,8 +65,11 @@ include('header.php');
 		<?
 		$legends=$db->query("SELECT * FROM legends ORDER BY bio_name");
 		while($legend=$legends->fetch_array()) {
-			$damagedealt=$db->query("SELECT SUM(damagedealt)/SUM(games) FROM stats WHERE legend_id=$legend[legend_id] AND $dayscondition")->fetch_array()[0];
-			$matchtime=$db->query("SELECT SUM(matchtime)/SUM(games) FROM stats WHERE legend_id=$legend[legend_id] AND $dayscondition")->fetch_array()[0];
+			$games=$db->query("SELECT SUM(games) FROM stats WHERE legend_id=$legend[legend_id] AND $dayscondition")->fetch_array()[0];
+			$damagedealt=$db->query("SELECT SUM(damagedealt)/$games FROM stats WHERE legend_id=$legend[legend_id] AND $dayscondition")->fetch_array()[0];
+			$matchtime=$db->query("SELECT SUM(matchtime)/$games FROM stats WHERE legend_id=$legend[legend_id] AND $dayscondition")->fetch_array()[0];
+			$timeheldweaponone=$db->query("SELECT SUM(timeheldweaponone)/$games FROM stats WHERE legend_id=$legend[legend_id] AND $dayscondition")->fetch_array()[0];
+			$timeheldweapontwo=$db->query("SELECT SUM(timeheldweapontwo)/$games FROM stats WHERE legend_id=$legend[legend_id] AND $dayscondition")->fetch_array()[0];
 			?>
 			<div class="card" id="<?=legendName2divId($legend['bio_name'])?>">
 				<img alt="Legend preview" src="/img/legends/<?=$legend['legend_id']?>.png" />
@@ -79,43 +82,43 @@ include('header.php');
 				</div>
 				<div class="statistical">
 					<div><p>Playrate</p> <?
-					echo number_format($db->query("SELECT SUM(games)/$totalgames FROM stats WHERE legend_id=$legend[legend_id] AND $dayscondition")->fetch_array()[0]*100, 2);
+					echo number_format($games/$totalgames*100, 2);
 					?>%</div>
 					<div><p>Winrate</p> <?
-					echo number_format($db->query("SELECT SUM(wins)/SUM(games) FROM stats WHERE legend_id=$legend[legend_id] AND $dayscondition")->fetch_array()[0]*$winratebalance*100, 2);
+					echo number_format($db->query("SELECT SUM(wins)/$games FROM stats WHERE legend_id=$legend[legend_id] AND $dayscondition")->fetch_array()[0]*$winratebalance*100, 2);
 					?>%</div>
 					<div><p>Dmg taken</p> <?
-					echo number_format($db->query("SELECT SUM(damagetaken)/SUM(games) FROM stats WHERE legend_id=$legend[legend_id] AND $dayscondition")->fetch_array()[0]);
+					echo number_format($db->query("SELECT SUM(damagetaken)/$games FROM stats WHERE legend_id=$legend[legend_id] AND $dayscondition")->fetch_array()[0]);
 					?></div>
 					<div><p>Suicides</p> <?
-					echo number_format($db->query("SELECT SUM(suicides)/SUM(games) FROM stats WHERE legend_id=$legend[legend_id] AND $dayscondition")->fetch_array()[0], 2);
+					echo number_format($db->query("SELECT SUM(suicides)/$games FROM stats WHERE legend_id=$legend[legend_id] AND $dayscondition")->fetch_array()[0], 2);
 					?></div>
 					<div><p>Dmg dealt</p> <?
 					echo number_format($damagedealt);
 					?>
 					<div class="damagedealt">Unarmed: <?
-					echo number_format($db->query("SELECT SUM(damageunarmed)/SUM(games) FROM stats WHERE legend_id=$legend[legend_id] AND $dayscondition")->fetch_array()[0]/$damagedealt*100, 1).'%';
+					echo number_format($db->query("SELECT SUM(damageunarmed)/$games FROM stats WHERE legend_id=$legend[legend_id] AND $dayscondition")->fetch_array()[0]/$damagedealt*100, 1).'%';
 					?></div>
 					<div class="damagedealt">Gadgets: <?
-					echo number_format($db->query("SELECT SUM(damagegadgets)/SUM(games) FROM stats WHERE legend_id=$legend[legend_id] AND $dayscondition")->fetch_array()[0]/$damagedealt*100, 1).'%';
+					echo number_format($db->query("SELECT SUM(damagegadgets)/$games FROM stats WHERE legend_id=$legend[legend_id] AND $dayscondition")->fetch_array()[0]/$damagedealt*100, 1).'%';
 					?></div>
 					<div class="damagedealt"><?=$legend['weapon_one']?>: <?
-					echo number_format($db->query("SELECT SUM(damageweaponone)/SUM(games) FROM stats WHERE legend_id=$legend[legend_id] AND $dayscondition")->fetch_array()[0]/$damagedealt*100, 1).'%';
+					echo number_format($db->query("SELECT SUM(damageweaponone)/$games FROM stats WHERE legend_id=$legend[legend_id] AND $dayscondition")->fetch_array()[0]/$damagedealt*100, 1).'%';
 					?></div>
 					<div class="damagedealt"><?=$legend['weapon_two']?>: <?
-					echo number_format($db->query("SELECT SUM(damageweapontwo)/SUM(games) FROM stats WHERE legend_id=$legend[legend_id] AND $dayscondition")->fetch_array()[0]/$damagedealt*100, 1).'%';
+					echo number_format($db->query("SELECT SUM(damageweapontwo)/$games FROM stats WHERE legend_id=$legend[legend_id] AND $dayscondition")->fetch_array()[0]/$damagedealt*100, 1).'%';
 					?></div></div>
-					<div><p>Match(s)</p> <?
+					<div><p>Match duration</p> <?
 					echo number_format($matchtime);
-					?>
+					?> seconds
 					<div class="matchtime">Unarmed: <?
-					echo number_format($db->query("SELECT (SUM(matchtime)-SUM(timeheldweaponone)-SUM(timeheldweapontwo))/SUM(games) FROM stats WHERE legend_id=$legend[legend_id] AND $dayscondition")->fetch_array()[0]/$matchtime*100, 1).'%';
+					echo number_format((1-($timeheldweaponone+$timeheldweapontwo)/$matchtime)*100, 1).'%';
 					?></div>
 					<div class="matchtime"><?=$legend['weapon_one']?>: <?
-					echo number_format($db->query("SELECT SUM(timeheldweaponone)/SUM(games) FROM stats WHERE legend_id=$legend[legend_id] AND $dayscondition")->fetch_array()[0]/$matchtime*100, 1).'%';
+					echo number_format($timeheldweaponone/$matchtime*100, 1).'%';
 					?></div>
 					<div class="matchtime"><?=$legend['weapon_two']?>: <?
-					echo number_format($db->query("SELECT SUM(timeheldweapontwo)/SUM(games) FROM stats WHERE legend_id=$legend[legend_id] AND $dayscondition")->fetch_array()[0]/$matchtime*100, 1).'%';
+					echo number_format($timeheldweapontwo/$matchtime*100, 1).'%';
 					?></div></div>
 				</div>
 			</div>

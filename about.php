@@ -1,7 +1,7 @@
 <?
 include('header.php');
 ?>
-<p>Data collected from top pages 6-54 from every region. The logic is that the top 250 players are too good and don't have fair matches</p>
+<p>Data collected from Gold 3 to Top 1</p>
 <table style="width: 80%;text-align: center;margin: 0 auto;">
 <tr>
 	<th>Role</th>

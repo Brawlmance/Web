@@ -1,5 +1,5 @@
 <?
-if(isset($_SERVER['REMOTE_ADDR'])) {echo "Nah"; exit;} // don't allow people to run the cron from the broswer. You could allow your ip for testing
+//if(isset($_SERVER['REMOTE_ADDR'])) {echo "Nah"; exit;} // don't allow people to run the cron from the broswer. You could allow your ip for testing
 
 include('header.php');
 
@@ -49,11 +49,8 @@ function statsToDB($legend, $day) {
 	}
 }
 
-$a = array('us-w', 'us-e', 'brz', 'eu', 'sea', 'aus');
-$time=time()+3*60*60; // trying to get about 10pm in every server
-$region = $a[floor($time/60/5/48)%6]; // rotating
-$page = floor($time/60/5)%48+1+5; // we can do up to 48 pages per region per day, with 1 page every 5 mins
-$ranking=api_call('rankings/1v1/'.$region.'/'.$page);
+$page = floor(time()/60/5)%288+1; // we can do up to 288 pages per day, with 1 page every 5 mins
+$ranking=api_call('rankings/1v1/all/'.$page);
 
 if(empty($ranking['error'])) { // RATE LIMIT? OR API DOWN
 	$n=0;
@@ -104,4 +101,4 @@ if(empty($ranking['error'])) { // RATE LIMIT? OR API DOWN
 	}
 }
 
-echo $realapicalls;
+echo $realapicalls.' api calls, page '.(floor(time()/60/5)%288+1);
