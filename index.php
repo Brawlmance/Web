@@ -69,7 +69,7 @@ include('header.php');
 			$matchtime=$db->query("SELECT SUM(matchtime)/SUM(games) FROM stats WHERE legend_id=$legend[legend_id] AND $dayscondition")->fetch_array()[0];
 			?>
 			<div class="card" id="<?=legendName2divId($legend['bio_name'])?>">
-				<img src="/img/legends/<?=$legend['legend_id']?>.png" />
+				<img alt="Legend preview" src="/img/legends/<?=$legend['legend_id']?>.png" />
 				<p><a href="#<?=legendName2divId($legend['bio_name'])?>"><b><?=$legend['bio_name']?></b></a>, <i><? if($legend['role']!="") echo $rolenames[$legend['role']]; else echo "New!";?></i></p>
 				<div class="stats">
 					<div class="strength"><?=$legend['strength']?></div>
