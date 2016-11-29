@@ -160,10 +160,10 @@ header div {
     text-align: center;
 }
 .card {
-	width: 230px;
+	width: 247px;
     display: inline-block;
-	padding: 5px;
     transition: background-color 0.5s ease;
+	margin-bottom: 25px;
 }
 .card.hash {
 	background: rgba(255, 255, 255, 0.05);
@@ -175,6 +175,15 @@ header div {
 }
 .card>p {
 	width: 100%;
+}
+.card .orderfactor {
+	cursor: pointer;
+	font-size: 10px;
+    position: relative;
+    top: -2px;
+}
+.card .orderfactor.active {
+	color: #4b805c;
 }
 .card .stats {
 	width: 100%;

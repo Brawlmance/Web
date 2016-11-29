@@ -12,8 +12,8 @@ $dayscondition="day>$day-$lastpatchday"; // http://api.steampowered.com/ISteamNe
 
 $rolenames=array("", "Tank", "Bruiser", "Glass cannon", "Balanced", "Ninja");
 
-$v=10;
-//$v=rand();
+$v=11;
+$v=rand();
 
 $totalgames=$db->query("SELECT SUM(games) FROM stats WHERE $dayscondition")->fetch_array()[0];
 $totalwins=$db->query("SELECT SUM(wins) FROM stats WHERE $dayscondition")->fetch_array()[0];
