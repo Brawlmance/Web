@@ -12,7 +12,7 @@ $dayscondition="day>$day-$lastpatchday"; // http://api.steampowered.com/ISteamNe
 
 $rolenames=array("", "Tank", "Bruiser", "Glass cannon", "Balanced", "Ninja");
 
-$v=6;
+$v=10;
 //$v=rand();
 
 $totalgames=$db->query("SELECT SUM(games) FROM stats WHERE $dayscondition")->fetch_array()[0];
@@ -25,11 +25,15 @@ if ($db->connect_errno) {
     printf("DB is down: %s\n", $db->connect_error);
     exit();
 }
+
+function legendName2divId($name) {
+	return str_replace(" ", "", $name);
+}
 ?>
 <!doctype html>
 <html lang="en">
-<head>
-	<meta charset="utf-8">
+<head><meta http-equiv="Content-Type" content="text/html; charset=gb18030">
+	
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 	<title>Brawlmance - Brawlhalla high elo legend stats</title>
 	<meta name="description" content="Brawlmance - Brawlhalla legend stats">
@@ -52,7 +56,7 @@ if ($db->connect_errno) {
       <div id="aggregationstatus">
 		<?
 		echo "Patch $lastpatch[id] | Games analyzed: ".number_format($totalgames);
-		if($totalgames<50000) echo " (WARNING: We are still aggregating patch data)";
+		if($totalgames<100000) echo " <b>(WARNING: We are still aggregating patch data)</b>";
 		?>
 	  </div>
 	</header>

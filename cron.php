@@ -4,7 +4,6 @@ if(isset($_SERVER['REMOTE_ADDR'])) {echo "Nah"; exit;} // don't allow people to 
 include('header.php');
 
 $db->query("DELETE FROM playerlegends WHERE day<$day-3"); // Delete players not seen in 3 days, so if they come back from later patches, stats are not fucked up
-
 $apicalls=0;
 $realapicalls=0;
 function api_call($url) {
@@ -38,11 +37,7 @@ function api_call($url) {
 	}
 	return $return;
 }
-function playerLegendToDB($brawlhalla_id, $legend, $day) {
-	global $db;
-	$db->query("DELETE FROM playerlegends WHERE brawlhalla_id='$brawlhalla_id' AND legend_id='$legend[legend_id]' AND day='$day'");
-	$db->query("INSERT INTO playerlegends (brawlhalla_id, legend_id, day, damagedealt, damagetaken, kos, falls, suicides, teamkos, matchtime, games, wins, damageunarmed, damagethrownitem, damageweaponone, damageweapontwo, damagegadgets, kounarmed, kothrownitem, koweaponone, koweapontwo, kogadgets, timeheldweaponone, timeheldweapontwo) VALUES ('$brawlhalla_id','$legend[legend_id]', '$day','$legend[damagedealt]','$legend[damagetaken]','$legend[kos]','$legend[falls]','$legend[suicides]','$legend[teamkos]','$legend[matchtime]','$legend[games]','$legend[wins]','$legend[damageunarmed]','$legend[damagethrownitem]','$legend[damageweaponone]','$legend[damageweapontwo]','$legend[damagegadgets]','$legend[kounarmed]','$legend[kothrownitem]','$legend[koweaponone]','$legend[koweapontwo]','$legend[kogadgets]','$legend[timeheldweaponone]','$legend[timeheldweapontwo]')");
-}
+
 function statsToDB($legend, $day) {
 	global $db;
 	$isindb=$db->query("SELECT 1 FROM stats WHERE legend_id='$legend[legend_id]' AND day='$day'");
@@ -53,6 +48,7 @@ function statsToDB($legend, $day) {
 		statsToDB($legend, $day);
 	}
 }
+
 $a = array('us-w', 'us-e', 'brz', 'eu', 'sea', 'aus');
 $time=time()+3*60*60; // trying to get about 10pm in every server
 $region = $a[floor($time/60/5/48)%6]; // rotating
@@ -61,11 +57,12 @@ $ranking=api_call('rankings/1v1/'.$region.'/'.$page);
 
 if(empty($ranking['error'])) { // RATE LIMIT? OR API DOWN
 	$n=0;
-	foreach($ranking as $user) {
+	foreach($ranking as $key => $user) {
 		$n++;
 		$user=api_call('player/'.$user['brawlhalla_id'].'/stats');
-		if(isset($user['legends'])) { // something went wrong D:
+		if(isset($user['legends'])) { // if not, something went wrong D:
 			foreach($user['legends'] as $legend) {
+                                if($legend['legend_id']==17) continue; // it doesnt actually exist
 				$isindb=$db->query("SELECT 1 FROM legends WHERE legend_id=$legend[legend_id]");
 				if($isindb->num_rows==0) {
 					$newlegend=api_call("legend/$legend[legend_id]");
@@ -99,8 +96,9 @@ if(empty($ranking['error'])) { // RATE LIMIT? OR API DOWN
 					$oldlegend['timeheldweaponone']=$legend['timeheldweaponone']-$oldlegend['timeheldweaponone'];
 					$oldlegend['timeheldweapontwo']=$legend['timeheldweapontwo']-$oldlegend['timeheldweapontwo'];
 					statsToDB($oldlegend, $day);
-				} 
-				playerLegendToDB($user['brawlhalla_id'], $legend, $day);
+				}
+				$db->query("DELETE FROM playerlegends WHERE brawlhalla_id='$user[brawlhalla_id]' AND legend_id='$legend[legend_id]' AND day='$day'");
+				$db->query("INSERT INTO playerlegends (brawlhalla_id, legend_id, day, damagedealt, damagetaken, kos, falls, suicides, teamkos, matchtime, games, wins, damageunarmed, damagethrownitem, damageweaponone, damageweapontwo, damagegadgets, kounarmed, kothrownitem, koweaponone, koweapontwo, kogadgets, timeheldweaponone, timeheldweapontwo) VALUES ('$user[brawlhalla_id]','$legend[legend_id]', '$day','$legend[damagedealt]','$legend[damagetaken]','$legend[kos]','$legend[falls]','$legend[suicides]','$legend[teamkos]','$legend[matchtime]','$legend[games]','$legend[wins]','$legend[damageunarmed]','$legend[damagethrownitem]','$legend[damageweaponone]','$legend[damageweapontwo]','$legend[damagegadgets]','$legend[kounarmed]','$legend[kothrownitem]','$legend[koweaponone]','$legend[koweapontwo]','$legend[kogadgets]','$legend[timeheldweaponone]','$legend[timeheldweapontwo]')");
 			}
 		}
 	}

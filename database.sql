@@ -125,7 +125,7 @@ CREATE TABLE IF NOT EXISTS `stats` (
   `kogadgets` int(10) unsigned NOT NULL,
   `timeheldweaponone` int(10) unsigned NOT NULL,
   `timeheldweapontwo` int(10) unsigned NOT NULL,
-  PRIMARY KEY (`legend_id`),
+  PRIMARY KEY (`legend_id`,`day`),
   KEY `day` (`day`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
