@@ -77,7 +77,7 @@ include('header.php');
 			$suicides=number_format($db->query("SELECT SUM(suicides)/$games FROM stats WHERE legend_id=$legend[legend_id] AND $dayscondition")->fetch_array()[0], 2);
 			?>
 			<div class="card" id="<?=legendName2divId($legend['bio_name'])?>">
-				<img alt="Legend preview" src="/img/legends/<?=$legend['legend_id']?>.png" />
+				<img alt="Legend image" src="/img/legends/<?=$legend['legend_id']?>.png" />
 				<p><a href="#<?=legendName2divId($legend['bio_name'])?>"><b><?=$legend['bio_name']?></b></a>, <i><? if($legend['role']!="") echo $rolenames[$legend['role']]; else echo "New!";?></i>
 				<i class="fa fa-chevron-up active orderfactor" data-name="name" data-value="<?=legendName2divId($legend['bio_name'])?>"></i>
 				</p>
@@ -99,10 +99,10 @@ include('header.php');
 					<div class="damagedealt">Gadgets: <?
 					echo number_format($db->query("SELECT SUM(damagegadgets)/$games FROM stats WHERE legend_id=$legend[legend_id] AND $dayscondition")->fetch_array()[0]/$damagedealt*100, 1).'%';
 					?></div>
-					<div class="damagedealt"><?=$legend['weapon_one']?>: <?
+					<div class="damagedealt"><?=weaponId2Name($legend['weapon_one'])?>: <?
 					echo number_format($db->query("SELECT SUM(damageweaponone)/$games FROM stats WHERE legend_id=$legend[legend_id] AND $dayscondition")->fetch_array()[0]/$damagedealt*100, 1).'%';
 					?></div>
-					<div class="damagedealt"><?=$legend['weapon_two']?>: <?
+					<div class="damagedealt"><?=weaponId2Name($legend['weapon_two'])?>: <?
 					echo number_format($db->query("SELECT SUM(damageweapontwo)/$games FROM stats WHERE legend_id=$legend[legend_id] AND $dayscondition")->fetch_array()[0]/$damagedealt*100, 1).'%';
 					?></div></div>
 					<div><p>Match duration <i class="fa fa-chevron-down orderfactor" data-name="matchtime" data-value="<?=number_format($matchtime)?>"></i></p> <?
@@ -111,10 +111,10 @@ include('header.php');
 					<div class="matchtime">Unarmed: <?
 					echo number_format((1-($timeheldweaponone+$timeheldweapontwo)/$matchtime)*100, 1).'%';
 					?></div>
-					<div class="matchtime"><?=$legend['weapon_one']?>: <?
+					<div class="matchtime"><?=weaponId2Name($legend['weapon_one'])?>: <?
 					echo number_format($timeheldweaponone/$matchtime*100, 1).'%';
 					?></div>
-					<div class="matchtime"><?=$legend['weapon_two']?>: <?
+					<div class="matchtime"><?=weaponId2Name($legend['weapon_two'])?>: <?
 					echo number_format($timeheldweapontwo/$matchtime*100, 1).'%';
 					?></div></div>
 				</div>

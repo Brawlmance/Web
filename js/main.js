@@ -96,4 +96,5 @@ defer(["$"], function() {
 	};
 	
 	$('.orderfactor').on('click.orderfactor', onorderfactorclick);
+	tinysort('.card',{selector:'i[data-name="name"]',attr:'data-value', order: 'asc'}); // for some reason mysql, php, and javascript sort special chars differently
 });

@@ -39,7 +39,7 @@ while($role=$roles->fetch_array()) {
 	}
 	?></p>
 <p>Contact: use the button in the header</p>
-<p>Other cool brawlhalla fansites (and other things): <a href="https://brawldb.com/">BrawlDB</a>, <a href="http://brawlhalla.rocks/">brawlhalla.rocks</a>, <a href="http://brawlspot.com/">Brawlspot</a>, <a href="https://www.reddit.com/r/Brawlhalla/comments/4f5em8/brawlhallapingchecker_check_your_ping_to_the/">Ping Check utility for Windows</a>, <a href="https://www.reddit.com/r/Brawlhalla/comments/4fudqw/all_brawlhalla_exclusives/">All brawlhalla skins reddit post</a></p>
+<p>Other cool brawlhalla fansites (and other things): <a href="https://brawldb.com/">BrawlDB</a>, <a href="http://brawlhalla.rocks/">brawlhalla.rocks</a>, <a href="http://brawlspot.com/">Brawlspot</a>, <a href="http://brawlleague.com/">BrawlLeague</a>, <a href="https://www.reddit.com/r/Brawlhalla/comments/4f5em8/brawlhallapingchecker_check_your_ping_to_the/">Ping Check utility for Windows</a>, <a href="https://www.reddit.com/r/Brawlhalla/comments/4fudqw/all_brawlhalla_exclusives/">All brawlhalla skins reddit post</a></p>
 <p>This is kinda open source! Check it out at <a href="https://github.com/NiciusB/BrawlmanceReloaded">Github</a></p>
 <?
 include('footer.php');

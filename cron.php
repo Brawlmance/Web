@@ -1,7 +1,26 @@
 <?
-//if(isset($_SERVER['REMOTE_ADDR'])) {echo "Nah"; exit;} // don't allow people to run the cron from the broswer. You could allow your ip for testing
+if(isset($_SERVER['REMOTE_ADDR'])) {echo "Nah"; exit;} // don't allow people to run the cron from the broswer. You could allow your ip for testing
 
 include('header.php');
+
+$steampatches=json_decode(file_get_contents("https://api.steampowered.com/ISteamNews/GetNewsForApp/v0002/?appid=291550&count=30&maxlength=300&format=json"), true);
+
+if(isset($steampatches['appnews']) && isset($steampatches['appnews']['newsitems'])) {
+	foreach($steampatches['appnews']['newsitems'] as $patch) {
+		if (strpos($patch['title'], 'Patch') !== false) {
+			preg_match( '/[0-9]+\.[0-9]+/', $patch['title'], $matches );
+			if(sizeof($matches)>0) {
+				$lastEl = array_values(array_slice($matches, -1))[0];
+				$patchid=$lastEl;
+			} else $patchid='?';
+			$patchexists=$db->query("SELECT 1 FROM patches WHERE timestamp='".$patch['date']."'");
+			if($patchexists->num_rows==0) {
+				$db->query("INSERT INTO patches (id, timestamp) VALUES ('".$patchid."', '".$patch['date']."')");
+			}
+		}
+	}
+
+}
 
 $db->query("DELETE FROM playerlegends WHERE day<$day-3"); // Delete players not seen in 3 days, so if they come back from later patches, stats are not fucked up
 $apicalls=0;
@@ -59,16 +78,9 @@ if(empty($ranking['error'])) { // RATE LIMIT? OR API DOWN
 		$user=api_call('player/'.$user['brawlhalla_id'].'/stats');
 		if(isset($user['legends'])) { // if not, something went wrong D:
 			foreach($user['legends'] as $legend) {
-                                if($legend['legend_id']==17) continue; // it doesnt actually exist
-				$isindb=$db->query("SELECT 1 FROM legends WHERE legend_id=$legend[legend_id]");
-				if($isindb->num_rows==0) {
-					$newlegend=api_call("legend/$legend[legend_id]");
-					if(isset($newlegend['legend_id'])) {
-						$db->query("INSERT INTO legends (legend_id, legend_name_key, bio_name, weapon_one, weapon_two, strength, dexterity, defense, speed) VALUES ('$newlegend[legend_id]','$newlegend[legend_name_key]','$newlegend[bio_name]','$newlegend[weapon_one]','$newlegend[weapon_two]','$newlegend[strength]','$newlegend[dexterity]','$newlegend[defense]','$newlegend[speed]')");
-					}
-				}
+				if($legend['legend_id']==17) continue; // it doesn't actually exist
 				
-				$oldlegend=$db->query("SELECT * FROM playerlegends WHERE brawlhalla_id=$user[brawlhalla_id] AND legend_id=$legend[legend_id]");
+				$oldlegend=$db->query("SELECT * FROM playerlegends WHERE brawlhalla_id='$user[brawlhalla_id]' AND legend_id='$legend[legend_id]' order by day desc limit 1"); // order by day desc limit 1 porque soy tonto, borrar mañana
 				if($oldlegend->num_rows>0) {
 					$oldlegend=$oldlegend->fetch_array();
 					$oldlegend['damagedealt']=$legend['damagedealt']-$oldlegend['damagedealt'];
@@ -93,8 +105,17 @@ if(empty($ranking['error'])) { // RATE LIMIT? OR API DOWN
 					$oldlegend['timeheldweaponone']=$legend['timeheldweaponone']-$oldlegend['timeheldweaponone'];
 					$oldlegend['timeheldweapontwo']=$legend['timeheldweapontwo']-$oldlegend['timeheldweapontwo'];
 					statsToDB($oldlegend, $day);
+					
+					$db->query("DELETE FROM playerlegends WHERE brawlhalla_id='$user[brawlhalla_id]' AND legend_id='$legend[legend_id]'");
+				} else { // maybe its a new legend
+					$isindb=$db->query("SELECT 1 FROM legends WHERE legend_id=$legend[legend_id]");
+					if($isindb->num_rows==0) {
+						$newlegend=api_call("legend/$legend[legend_id]");
+						if(isset($newlegend['legend_id'])) {
+							$db->query("INSERT INTO legends (legend_id, legend_name_key, bio_name, weapon_one, weapon_two, strength, dexterity, defense, speed) VALUES ('$newlegend[legend_id]','$newlegend[legend_name_key]','$newlegend[bio_name]','$newlegend[weapon_one]','$newlegend[weapon_two]','$newlegend[strength]','$newlegend[dexterity]','$newlegend[defense]','$newlegend[speed]')");
+						}
+					}
 				}
-				$db->query("DELETE FROM playerlegends WHERE brawlhalla_id='$user[brawlhalla_id]' AND legend_id='$legend[legend_id]' AND day='$day'");
 				$db->query("INSERT INTO playerlegends (brawlhalla_id, legend_id, day, damagedealt, damagetaken, kos, falls, suicides, teamkos, matchtime, games, wins, damageunarmed, damagethrownitem, damageweaponone, damageweapontwo, damagegadgets, kounarmed, kothrownitem, koweaponone, koweapontwo, kogadgets, timeheldweaponone, timeheldweapontwo) VALUES ('$user[brawlhalla_id]','$legend[legend_id]', '$day','$legend[damagedealt]','$legend[damagetaken]','$legend[kos]','$legend[falls]','$legend[suicides]','$legend[teamkos]','$legend[matchtime]','$legend[games]','$legend[wins]','$legend[damageunarmed]','$legend[damagethrownitem]','$legend[damageweaponone]','$legend[damageweapontwo]','$legend[damagegadgets]','$legend[kounarmed]','$legend[kothrownitem]','$legend[koweaponone]','$legend[koweapontwo]','$legend[kogadgets]','$legend[timeheldweaponone]','$legend[timeheldweapontwo]')");
 			}
 		}

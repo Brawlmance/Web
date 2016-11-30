@@ -1,6 +1,6 @@
 		</div>
 	<footer>
-			<p>Background by <a href="http://cyberbubble99.deviantart.com/">cyberbubble99</a>, found in <a href="http://cyberbubble99.deviantart.com/art/Queen-Nai-623838563">DevianArt</a></p>
+			<p>Background of Queen Nai by <a href="http://cyberbubble99.deviantart.com/">cyberbubble99</a>, found in <a href="http://cyberbubble99.deviantart.com/art/Queen-Nai-623838563">DevianArt</a>, Backgrounds of stages by Blue Mammoth Games</p>
 			<p>Legend and stats icons taken from the <a href="http://wiki.brawlhalla.com/w/Main_Page">Official Brawlhalla Wiki</a></p>
 			<p>Using Brawlhalla, Steam, and Twitch APIs. Using JQuery, TinySort, and FontAwesome</p>
 			<p>Brawlmance isn't endorsed by Blue Mammoth Games and doesn't reflect the views or opinions of Blue Mammoth Games or anyone officially involved in producing or managing Brawlhalla. Brawlhalla and Blue Mammoth Games are trademarks or registered trademarks of Blue Mammoth Games</p>
@@ -18,7 +18,7 @@
 	ga('create', 'UA-67731642-1', 'auto');
 	ga('send', 'pageview');
 	</script>
-  <img class="bg" src="/img/bg1.png" alt="Background" />
+  <img class="bg" src="/img/bg<?=rand(1,4)?>.png" alt="Background" />
   <div id="coverbg"></div>
 </body>
 </html>
