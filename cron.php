@@ -8,8 +8,12 @@ $steampatches=json_decode(file_get_contents("https://api.steampowered.com/ISteam
 if(isset($steampatches['appnews']) && isset($steampatches['appnews']['newsitems'])) {
 	foreach($steampatches['appnews']['newsitems'] as $patch) {
 		if (strpos($patch['title'], 'Patch') !== false) {
+			preg_match( '/[0-9]+\.[0-9]+\.[0-9]+/', $patch['title'], $submatches );
 			preg_match( '/[0-9]+\.[0-9]+/', $patch['title'], $matches );
-			if(sizeof($matches)>0) {
+			if(sizeof($submatches)>0) {
+				$lastEl = array_values(array_slice($submatches, -1))[0];
+				$patchid=$lastEl;
+			} else if(sizeof($matches)>0) {
 				$lastEl = array_values(array_slice($matches, -1))[0];
 				$patchid=$lastEl;
 			} else $patchid='?';
@@ -22,7 +26,7 @@ if(isset($steampatches['appnews']) && isset($steampatches['appnews']['newsitems'
 
 }
 
-$db->query("DELETE FROM playerlegends WHERE day<$day-3"); // Delete players not seen in 3 days, so if they come back from later patches, stats are not fucked up
+$db->query("DELETE FROM playerlegends WHERE day<=$day-3"); // Delete players not seen in 3 days, so if they come back from later patches, stats are not fucked up
 $apicalls=0;
 $realapicalls=0;
 function api_call($url) {
@@ -46,7 +50,7 @@ function api_call($url) {
     curl_setopt_array($ch, $defaults); 
     if( ! $result = curl_exec($ch)) 
     { 
-        trigger_error(curl_error($ch)); 
+        trigger_error(curl_error($ch));
     } 
     curl_close($ch);
     $return=json_decode($result, true);
@@ -57,14 +61,14 @@ function api_call($url) {
 	return $return;
 }
 
-function statsToDB($legend, $day) {
+function statsToDB($legend, $elo, $day) {
 	global $db;
 	$isindb=$db->query("SELECT 1 FROM stats WHERE legend_id='$legend[legend_id]' AND day='$day'");
 	if($isindb->num_rows>0) {
-		$db->query("UPDATE stats SET damagedealt=damagedealt+$legend[damagedealt], damagetaken=damagetaken+$legend[damagetaken], kos=kos+$legend[kos], falls=falls+$legend[falls], suicides=suicides+$legend[suicides], teamkos=teamkos+$legend[teamkos], matchtime=matchtime+$legend[matchtime], games=games+$legend[games], wins=wins+$legend[wins], damageunarmed=damageunarmed+$legend[damageunarmed], damagethrownitem=damagethrownitem+$legend[damagethrownitem], damageweaponone=damageweaponone+$legend[damageweaponone], damageweapontwo=damageweapontwo+$legend[damageweapontwo], damagegadgets=damagegadgets+$legend[damagegadgets], kounarmed=kounarmed+$legend[kounarmed], kothrownitem=kothrownitem+$legend[kothrownitem], koweaponone=koweaponone+$legend[koweaponone], koweapontwo=koweapontwo+$legend[koweapontwo], kogadgets=kogadgets+$legend[kogadgets], timeheldweaponone=timeheldweaponone+$legend[timeheldweaponone], timeheldweapontwo=timeheldweapontwo+$legend[timeheldweapontwo] WHERE legend_id='$legend[legend_id]' AND day='$day'");
+		$db->query("UPDATE stats SET damagedealt=damagedealt+$legend[damagedealt], damagetaken=damagetaken+$legend[damagetaken], kos=kos+$legend[kos], falls=falls+$legend[falls], suicides=suicides+$legend[suicides], teamkos=teamkos+$legend[teamkos], matchtime=matchtime+$legend[matchtime], games=games+$legend[games], wins=wins+$legend[wins], elo=elo+$elo, damageunarmed=damageunarmed+$legend[damageunarmed], damagethrownitem=damagethrownitem+$legend[damagethrownitem], damageweaponone=damageweaponone+$legend[damageweaponone], damageweapontwo=damageweapontwo+$legend[damageweapontwo], damagegadgets=damagegadgets+$legend[damagegadgets], kounarmed=kounarmed+$legend[kounarmed], kothrownitem=kothrownitem+$legend[kothrownitem], koweaponone=koweaponone+$legend[koweaponone], koweapontwo=koweapontwo+$legend[koweapontwo], kogadgets=kogadgets+$legend[kogadgets], timeheldweaponone=timeheldweaponone+$legend[timeheldweaponone], timeheldweapontwo=timeheldweapontwo+$legend[timeheldweapontwo] WHERE legend_id='$legend[legend_id]' AND day='$day'");
 	} else {
 		$db->query("INSERT INTO stats (legend_id, day) VALUES ('$legend[legend_id]', '$day')");
-		statsToDB($legend, $day);
+		statsToDB($legend, $elo, $day);
 	}
 }
 
@@ -73,9 +77,9 @@ $ranking=api_call('rankings/1v1/all/'.$page);
 
 if(empty($ranking['error'])) { // RATE LIMIT? OR API DOWN
 	$n=0;
-	foreach($ranking as $key => $user) {
+	foreach($ranking as $key => $rankinguser) {
 		$n++;
-		$user=api_call('player/'.$user['brawlhalla_id'].'/stats');
+		$user=api_call('player/'.$rankinguser['brawlhalla_id'].'/stats');
 		if(isset($user['legends'])) { // if not, something went wrong D:
 			foreach($user['legends'] as $legend) {
 				if($legend['legend_id']==17) continue; // it doesn't actually exist
@@ -104,7 +108,10 @@ if(empty($ranking['error'])) { // RATE LIMIT? OR API DOWN
 					$oldlegend['kogadgets']=$legend['kogadgets']-$oldlegend['kogadgets'];
 					$oldlegend['timeheldweaponone']=$legend['timeheldweaponone']-$oldlegend['timeheldweaponone'];
 					$oldlegend['timeheldweapontwo']=$legend['timeheldweapontwo']-$oldlegend['timeheldweapontwo'];
-					statsToDB($oldlegend, $day);
+					
+					if($oldlegend['games']>0) {
+						statsToDB($oldlegend, $rankinguser['rating']*$oldlegend['games'],$day);
+					}
 					
 					$db->query("DELETE FROM playerlegends WHERE brawlhalla_id='$user[brawlhalla_id]' AND legend_id='$legend[legend_id]'");
 				} else { // maybe its a new legend

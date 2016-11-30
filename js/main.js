@@ -44,24 +44,6 @@ defer(["$"], function() {
 		  });
 	  }
 	});
-	var onhashchangefn=function(e) {
-		$('.card').removeClass('hash');
-		$(window.location.hash).addClass('hash');
-	}
-	$(window).on( 'hashchange', onhashchangefn);
-	onhashchangefn();
-	
-	$('a[href*="#"]:not([href="#"])').click(function() {
-	if (location.pathname.replace(/^\//,'') == this.pathname.replace(/^\//,'') && location.hostname == this.hostname) {
-	  var target = $(this.hash);
-	  target = target.length ? target : $('[name=' + this.hash.slice(1) +']');
-	  if (target.length) {
-		$('html, body').animate({
-		  scrollTop: target.offset().top-100
-		}, 350);
-	  }
-	}
-	});
   
 	/**
 	 * TinySort is a small script that sorts HTML elements. It sorts by text- or attribute value, or by that of one of it's children.
@@ -96,5 +78,36 @@ defer(["$"], function() {
 	};
 	
 	$('.orderfactor').on('click.orderfactor', onorderfactorclick);
-	tinysort('.card',{selector:'i[data-name="name"]',attr:'data-value', order: 'asc'}); // for some reason mysql, php, and javascript sort special chars differently
+	
+	if(typeof startsortfn!="undefined") startsortfn();
+	
+	
+	
+	var onhashchangefn=function(e) {
+		$('.card').removeClass('hash');
+		$(window.location.hash).addClass('hash');
+		return false;
+	}
+	$(window).on( 'hashchange', onhashchangefn);
+	onhashchangefn();
+	
+	$('a[href*="#"]:not([href="#"])').click(function() {
+	if (location.pathname.replace(/^\//,'') == this.pathname.replace(/^\//,'') && location.hostname == this.hostname) {
+	  var target = $(this.hash);
+	  target = target.length ? target : $('[name=' + this.hash.slice(1) +']');
+	  if (target.length) {
+			$('html, body').animate({
+			  scrollTop: target.offset().top-100
+			}, 350);
+	  }
+	}
+	});
+	
+	if($(window.location.hash).length>0) {
+		$('html, body').animate({
+		  scrollTop: $(window.location.hash).offset().top-100
+		}, 350);
+	}
+	
+	
 });

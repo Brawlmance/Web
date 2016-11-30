@@ -5,6 +5,7 @@ include('header.php');
 <table style="width: 80%;text-align: center;margin: 0 auto;">
 <tr>
 	<th>Role</th>
+	<th>Description</th>
 	<th>Legends</th>
 </tr>
 <?
@@ -17,10 +18,11 @@ while($role=$roles->fetch_array()) {
 		?>
 		<tr>
 			<td><?=$rolenames[$role]?></td>
+			<td><?=$roledescs[$role]?></td>
 			<td><?
 			while($legend=$legends->fetch_array()) {
 			if($first) $first=false; else echo ", ";
-			?><a href="/#<?=$legend['bio_name']?>"><?=$legend['bio_name']?></a><?
+			?><a href="/legends#<?=legendName2divId($legend['bio_name'])?>"><?=$legend['bio_name']?></a><?
 			}
 			?></td>
 		</tr>
@@ -38,7 +40,7 @@ while($role=$roles->fetch_array()) {
 		default: echo round($db->query("SELECT SUM(damagegadgets)/SUM(games) FROM stats WHERE $dayscondition")->fetch_array()[0]*10)/10 ." average damage made with gadgets per game"; break;
 	}
 	?></p>
-<p>Contact: use the button in the header</p>
+<p>Contact: <a href="https://twitter.com/intent/tweet?screen_name=Balbonator" class="twitter-mention-button" data-show-count="false"></a><script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script></p>
 <p>Other cool brawlhalla fansites (and other things): <a href="https://brawldb.com/">BrawlDB</a>, <a href="http://brawlhalla.rocks/">brawlhalla.rocks</a>, <a href="http://brawlspot.com/">Brawlspot</a>, <a href="http://brawlleague.com/">BrawlLeague</a>, <a href="https://www.reddit.com/r/Brawlhalla/comments/4f5em8/brawlhallapingchecker_check_your_ping_to_the/">Ping Check utility for Windows</a>, <a href="https://www.reddit.com/r/Brawlhalla/comments/4fudqw/all_brawlhalla_exclusives/">All brawlhalla skins reddit post</a></p>
 <p>This is kinda open source! Check it out at <a href="https://github.com/NiciusB/BrawlmanceReloaded">Github</a></p>
 <?

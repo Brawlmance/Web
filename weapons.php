@@ -1,10 +1,15 @@
 <?
 include('header.php');
 ?>
+		<script>
+		var startsortfn=function() {
+			tinysort('.card',{selector:'i[data-name="name"]',attr:'data-value', order: 'asc'}); // for some reason mysql, php, and javascript sort special chars differently
+		}
+		</script>
 		<div class="grid">
 		<?
 		$weapons=array();
-		$weaponsquery=$db->query("SELECT weapon_one, weapon_two FROM legends GROUP BY weapon_one, weapon_one"); // im bad at sql
+		$weaponsquery=$db->query("SELECT weapon_one, weapon_two FROM legends GROUP BY weapon_one, weapon_one ORDER BY weapon_one, weapon_two"); // im bad at sql
 		while($weapon=$weaponsquery->fetch_array()) {
 			if(!in_array($weapon[0], $weapons)) $weapons[$weapon[0]]=$weapon[0];
 			if(!in_array($weapon[1], $weapons)) $weapons[$weapon[1]]=$weapon[1];

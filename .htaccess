@@ -1,3 +1,13 @@
+Options -MultiViews
+RewriteEngine On
+
+RewriteRule ^legends(.*)$ /legends.php?query=$1 [L]
+RewriteRule ^weapons(.*)$ /weapons.php?query=$1 [L]
+RewriteRule ^about(.*)$ /about.php?query=$1 [L]
+
+
+
+
 # Apache Server Configs v2.11.0 | MIT License
 # https://github.com/h5bp/server-configs-apache
 

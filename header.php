@@ -6,14 +6,15 @@ $db = new mysqli($db_host, $db_user, $db_password, $db_name);
 
 
 $day=floor(time()/60/60/24);
-$lastpatch=$db->query("SELECT timestamp, id FROM patches WHERE timestamp<".time()."-60*60*24*2 ORDER BY timestamp DESC LIMIT 1")->fetch_array();
+$lastpatch=$db->query("SELECT timestamp, id FROM patches WHERE changes='1' AND timestamp<".time()."-60*60*24*2 ORDER BY timestamp DESC LIMIT 1")->fetch_array();
 $lastpatchday=floor($lastpatch['timestamp']/60/60/24)+1; // patch stats start next day
 $dayscondition="day>$day-$lastpatchday"; // http://api.steampowered.com/ISteamNews/GetNewsForApp/v0002/?appid=291550&count=30&maxlength=300&format=json
 
 $rolenames=array("", "Tank", "Warrior", "Hunter", "Hybrid", "Assasin");
+$roledescs=array("", "High defense but low speed", "High damage output", "High damage, but fragile", "Balanced stats", "Very high speed, but very fragile");
 
-$v=17;
-//$v=rand();
+$v=24;
+$v=rand();
 
 $totalgames=$db->query("SELECT SUM(games) FROM stats WHERE $dayscondition")->fetch_array()[0];
 $totalwins=$db->query("SELECT SUM(wins) FROM stats WHERE $dayscondition")->fetch_array()[0];
@@ -44,8 +45,8 @@ function weaponId2Name($name) {
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>Brawlmance - Brawlhalla Legend winrate and stats</title>
-	<meta name="description" content="Brawlmance - Brawlhalla legend stats">
+	<title>Brawlmance - Brawlhalla Legend winrates and other stats</title>
+	<meta name="description" content="Brawlmance - Brawlhalla Legend winrates, Weapon win rates and other stats">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="apple-touch-icon" sizes="57x57" href="/apple-icon-57x57.png">
 	<link rel="apple-touch-icon" sizes="60x60" href="/apple-icon-60x60.png">
@@ -75,12 +76,10 @@ function weaponId2Name($name) {
       <div id="menu">
 		<ul>
 			<li><a href="/"><img src="/img/logo.png" alt="Brawlmance" title="Brawlmance" /> HOME</a></li>
-			<li><a href="/weapons.php">WEAPONS</a></li>
-			<li><a href="/about.php">ABOUT</a></li>
+			<li><a href="/legends">LEGENDS</a></li>
+			<li><a href="/weapons">WEAPONS</a></li>
+			<li><a href="/about">ABOUT</a></li>
 		</ul>
-	  </div>
-      <div id="socialmenu">
-		<a href="https://twitter.com/intent/tweet?screen_name=Balbonator" class="twitter-mention-button" data-show-count="false"></a><script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
 	  </div>
       <div id="aggregationstatus">
 		<?

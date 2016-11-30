@@ -40,6 +40,9 @@ img.bg {
     margin-left: -512px;   /* 50% */
   }
 }
+h1 {
+	text-align: center;
+}
 #coverbg {
     width: 100%;
     height: 100%;
@@ -74,7 +77,7 @@ header div {
 	float: left;
 }
 #menu {
-	width: 30%;
+	width:40%;
 }
 #menu ul {
     list-style: none;
@@ -88,21 +91,17 @@ header div {
     font-size: 18px;
 }
 #menu li img {
-    height: 30px;
-    width: 30px;
-    margin-top: -4px;
+    height: 28px;
+    width: 28px;
+    margin-top: -8px;
     margin-right: 3px;
+    position: relative;
+    top: 2px;
 }
 #aggregationstatus {
-	width: 50%;
+	width: 60%;
 	font-size: 15px;
 	text-align: center;
-}
-#socialmenu {
-	width: 20%;
-	text-align: right;
-	padding-right: 1rem;
-	float: right;
 }
 @media (max-width: 1023px) {
 	#aggregationstatus {
@@ -110,8 +109,8 @@ header div {
 		float: right;
 		margin-top: 10px;
 	}
-	#menu, #socialmenu {
-		width: 50%;
+	#menu {
+		width: 100%;
 	}
 }
 #content {
@@ -168,9 +167,10 @@ header div {
 }
 .card {
 	width: 250px;
-    display: inline-block;
+	float: left;
     transition: background-color 0.5s ease;
-	margin-bottom: 25px;
+	margin-top: 10px;
+	margin-bottom: 10px;
 }
 .card.hash {
 	background: rgba(255, 255, 255, 0.05);
