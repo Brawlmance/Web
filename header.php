@@ -3,20 +3,29 @@ ini_set('display_errors', 1);
 
 include('keys.php');
 $db = new mysqli($db_host, $db_user, $db_password, $db_name);
-
+$db->set_charset("utf8mb4");
 
 $day=floor(time()/60/60/24);
 $lastpatch=$db->query("SELECT timestamp, id FROM patches WHERE changes='1' AND timestamp<".time()."-60*60*24*2 ORDER BY timestamp DESC LIMIT 1")->fetch_array();
-$lastpatchday=floor($lastpatch['timestamp']/60/60/24)+1; // patch stats start next day
-$dayscondition="day>$day-$lastpatchday"; // http://api.steampowered.com/ISteamNews/GetNewsForApp/v0002/?appid=291550&count=30&maxlength=300&format=json
+if(isset($_GET['patch']) && $_GET['patch']!=$lastpatch['id']) {
+	$lastpatch=$db->query("SELECT timestamp, id FROM patches WHERE changes='1' AND id='".$db->real_escape_string($_GET['patch'])."' ORDER BY timestamp DESC LIMIT 1");
+	if($lastpatch->num_rows==0) die('Patch not found'); else $lastpatch=$lastpatch->fetch_array();
+	$nextpatch=$db->query("SELECT timestamp, id FROM patches WHERE changes='1' AND timestamp>$lastpatch[timestamp] ORDER BY timestamp LIMIT 1");
+	if($nextpatch->num_rows==0) die('Next patch not found'); else $nextpatch=$nextpatch->fetch_array();
+	$lastpatchday=floor($lastpatch['timestamp']/60/60/24)+1; // patch stats start next day
+	$nextpatchday=floor($nextpatch['timestamp']/60/60/24)+1; // patch stats start next day
+} else {
+	$lastpatchday=floor($lastpatch['timestamp']/60/60/24)+1; // patch stats start next day
+	$nextpatchday=$day+1;
+}
+	$dayscondition="day>$lastpatchday AND day<$nextpatchday"; // current patch
 
-$rolenames=array("", "Tank", "Warrior", "Hunter", "Hybrid", "Assasin");
-$roledescs=array("", "High defense but low speed", "High damage output", "High damage, but fragile", "Balanced stats", "Very high speed, but very fragile");
+$patchid=$lastpatch['id'];
 
-$v=24;
-$v=rand();
+$v=31;
 
 $totalgames=$db->query("SELECT SUM(games) FROM stats WHERE $dayscondition")->fetch_array()[0];
+if($totalgames==0) die('No games for that patch');
 $totalwins=$db->query("SELECT SUM(wins) FROM stats WHERE $dayscondition")->fetch_array()[0];
 $winratebalance=$totalgames/$totalwins/2;
 
@@ -30,6 +39,7 @@ if ($db->connect_errno) {
 function legendName2divId($name) {
 	return str_replace(" ", "", $name);
 }
+
 function weaponId2Name($name) {
 	switch($name) {
 		case 'RocketLance': return "Rocket Lance"; break;
@@ -42,11 +52,11 @@ function weaponId2Name($name) {
 ?>
 <!doctype html>
 <html lang="en">
-<head>
-	<meta charset="utf-8">
+<head><meta http-equiv="Content-Type" content="text/html; charset=gb18030">
+	
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>Brawlmance - Brawlhalla Legend winrates and other stats</title>
-	<meta name="description" content="Brawlmance - Brawlhalla Legend winrates, Weapon win rates and other stats">
+	<title>Brawlmance - Brawlhalla Statistics</title>
+	<meta name="description" content="Brawlmance provides Brawlhalla Statistics for legend winrates, weapon winrates, leaderboards, and more">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="apple-touch-icon" sizes="57x57" href="/apple-icon-57x57.png">
 	<link rel="apple-touch-icon" sizes="60x60" href="/apple-icon-60x60.png">
@@ -75,15 +85,26 @@ function weaponId2Name($name) {
 	<header>
       <div id="menu">
 		<ul>
-			<li><a href="/"><img src="/img/logo.png" alt="Brawlmance" title="Brawlmance" /> HOME</a></li>
-			<li><a href="/legends">LEGENDS</a></li>
-			<li><a href="/weapons">WEAPONS</a></li>
-			<li><a href="/about">ABOUT</a></li>
+			<li><a href="/?patch=<?=$patchid?>"><img src="/img/logo.png" alt="Brawlmance" title="Brawlmance" /> HOME</a></li>
+			<li><a href="/legends?patch=<?=$patchid?>">LEGENDS</a></li>
+			<li><a href="/weapons?patch=<?=$patchid?>">WEAPONS</a></li>
+			<li><a href="/rankings?patch=<?=$patchid?>">RANKINGS</a></li>
+			<li><a href="/about?patch=<?=$patchid?>">ABOUT</a></li>
 		</ul>
 	  </div>
       <div id="aggregationstatus">
+		<form method="GET" style="display:inline" id="patchform">
+		<label>Patch <select name="patch" onchange="$('#patchform').submit()">
 		<?
-		echo "Patch $lastpatch[id] | Games analyzed: ".number_format($totalgames);
+		$patches=$db->query("SELECT id FROM patches WHERE changes='1' ORDER BY timestamp DESC LIMIT 20");
+		while($patch=$patches->fetch_array(true)) {
+			echo "<option ",($patch['id']==$patchid ? 'selected' : ''),">$patch[id]</option>";
+		}
+		?>
+		</select></label>
+		</form>
+		<?
+		echo "| Games analyzed: ".number_format($totalgames);
 		if($totalgames<300000) echo " <b>(WARNING: We are still aggregating patch data)</b>";
 		?>
 	  </div>

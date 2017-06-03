@@ -2,35 +2,6 @@
 include('header.php');
 ?>
 <p>Data collected from Gold 3 to Top 1</p>
-<table style="width: 80%;text-align: center;margin: 0 auto;">
-<tr>
-	<th>Role</th>
-	<th>Description</th>
-	<th>Legends</th>
-</tr>
-<?
-$roles=$db->query("SELECT distinct role as role FROM legends WHERE role IS NOT NULL ORDER BY role");
-while($role=$roles->fetch_array()) {
-	$role=$role['role'];
-	$legends=$db->query("SELECT legend_id, (SELECT bio_name FROM legends WHERE legend_id=stats.legend_id) as bio_name FROM stats WHERE legend_id in (select legend_id from legends  where role='$role') group by legend_id");
-	if($legends->num_rows>0) {
-		$first=true;
-		?>
-		<tr>
-			<td><?=$rolenames[$role]?></td>
-			<td><?=$roledescs[$role]?></td>
-			<td><?
-			while($legend=$legends->fetch_array()) {
-			if($first) $first=false; else echo ", ";
-			?><a href="/legends#<?=legendName2divId($legend['bio_name'])?>"><?=$legend['bio_name']?></a><?
-			}
-			?></td>
-		</tr>
-		<?
-	}
-}
-?>
-</table>
 <p>Random fact: 
 	<?
 	switch(rand(1,5)) {
@@ -40,9 +11,9 @@ while($role=$roles->fetch_array()) {
 		default: echo round($db->query("SELECT SUM(damagegadgets)/SUM(games) FROM stats WHERE $dayscondition")->fetch_array()[0]*10)/10 ." average damage made with gadgets per game"; break;
 	}
 	?></p>
-<p>Contact: <a href="https://twitter.com/intent/tweet?screen_name=Balbonator" class="twitter-mention-button" data-show-count="false"></a><script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script></p>
-<p>Other cool brawlhalla fansites (and other things): <a href="https://brawldb.com/">BrawlDB</a>, <a href="http://brawlhalla.rocks/">brawlhalla.rocks</a>, <a href="http://brawlspot.com/">Brawlspot</a>, <a href="http://brawlleague.com/">BrawlLeague</a>, <a href="https://www.reddit.com/r/Brawlhalla/comments/4f5em8/brawlhallapingchecker_check_your_ping_to_the/">Ping Check utility for Windows</a>, <a href="https://www.reddit.com/r/Brawlhalla/comments/4fudqw/all_brawlhalla_exclusives/">All brawlhalla skins reddit post</a></p>
-<p>This is kinda open source! Check it out at <a href="https://github.com/NiciusB/BrawlmanceReloaded">Github</a></p>
+<p>Made with love by <a href="https://balbona.me">NiciusB</a></p>
+<p>Other cool brawlhalla fansites (and other things): <a href="https://brawldb.com/">BrawlDB</a>, <a href="http://brawlspot.com/">Brawlspot</a>, <a href="http://brawlleague.com/">BrawlLeague</a>, <a href="https://www.reddit.com/r/Brawlhalla/comments/4f5em8/brawlhallapingchecker_check_your_ping_to_the/">Ping Check utility for Windows</a>, <a href="https://www.reddit.com/r/Brawlhalla/comments/4fudqw/all_brawlhalla_exclusives/">All brawlhalla skins reddit post</a></p>
+<p>This project is open source! Check it out at <a href="https://github.com/NiciusB/BrawlmanceReloaded">Github</a></p>
 <?
 include('footer.php');
 ?>

@@ -1,9 +1,10 @@
 Options -MultiViews
 RewriteEngine On
 
-RewriteRule ^legends(.*)$ /legends.php?query=$1 [L]
-RewriteRule ^weapons(.*)$ /weapons.php?query=$1 [L]
-RewriteRule ^about(.*)$ /about.php?query=$1 [L]
+RewriteRule ^legends(.*)$ /legends.php?query=$1 [L, QSA]
+RewriteRule ^weapons(.*)$ /weapons.php?query=$1 [L, QSA]
+RewriteRule ^rankings(.*)$ /rankings.php?query=$1 [L, QSA]
+RewriteRule ^about(.*)$ /about.php?query=$1 [L, QSA]
 
 
 

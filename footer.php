@@ -6,6 +6,8 @@
 			<p>Brawlmance isn't endorsed by Blue Mammoth Games and doesn't reflect the views or opinions of Blue Mammoth Games or anyone officially involved in producing or managing Brawlhalla. Brawlhalla and Blue Mammoth Games are trademarks or registered trademarks of Blue Mammoth Games</p>
 		</footer>
   </div>
+  <img class="bg" src="/img/bg<?=rand(1,4)?>.jpg" alt="Background" />
+  <div id="coverbg"></div>
 	<script async src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 	<script async src="/js/main.js?v=<?=$v?>"></script>
 	<script async src="https://use.fontawesome.com/042ed71033.js"></script>
@@ -18,7 +20,5 @@
 	ga('create', 'UA-67731642-1', 'auto');
 	ga('send', 'pageview');
 	</script>
-  <img class="bg" src="/img/bg<?=rand(1,4)?>.png" alt="Background" />
-  <div id="coverbg"></div>
 </body>
 </html>

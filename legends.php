@@ -3,7 +3,14 @@ include('header.php');
 ?>
 		<script>
 		var startsortfn=function() {
-			tinysort('.card',{selector:'i[data-name="name"]',attr:'data-value', order: 'asc'}); // for some reason mysql, php, and javascript sort special chars differently
+			var orderfactor=Cookies.get('orderfactor'); if(orderfactor==null) orderfactor='name';
+			var order=Cookies.get('order'); if(order==null) order='asc';
+			tinysort('.card',{selector:'i[data-name="'+orderfactor+'"]',attr: 'data-value', order: order});
+			if(order=='asc') {
+			  $('.card i[data-name="'+orderfactor+'"]').removeClass('fa-chevron-down').addClass('fa-chevron-up active');
+			} else {
+			  $('.card i[data-name="'+orderfactor+'"]').addClass('active');
+			}
 		}
 		</script>
 		<div class="grid">
@@ -11,6 +18,7 @@ include('header.php');
 		$legends=$db->query("SELECT * FROM legends ORDER BY bio_name");
 		while($legend=$legends->fetch_array()) {
 			$games=$db->query("SELECT SUM(games) FROM stats WHERE legend_id=$legend[legend_id] AND $dayscondition")->fetch_array()[0];
+			if($games==0) continue;
 			$damagedealt=$db->query("SELECT SUM(damagedealt)/$games FROM stats WHERE legend_id=$legend[legend_id] AND $dayscondition")->fetch_array()[0];
 			$matchtime=$db->query("SELECT SUM(matchtime)/$games FROM stats WHERE legend_id=$legend[legend_id] AND $dayscondition")->fetch_array()[0];
 			$timeheldweaponone=$db->query("SELECT SUM(timeheldweaponone)/$games FROM stats WHERE legend_id=$legend[legend_id] AND $dayscondition")->fetch_array()[0];
@@ -20,11 +28,10 @@ include('header.php');
 			$winrate=number_format($db->query("SELECT SUM(wins)/$games FROM stats WHERE legend_id=$legend[legend_id] AND $dayscondition")->fetch_array()[0]*$winratebalance*100, 2);
 			$damagetaken=number_format($db->query("SELECT SUM(damagetaken)/$games FROM stats WHERE legend_id=$legend[legend_id] AND $dayscondition")->fetch_array()[0]);
 			$suicides=number_format($db->query("SELECT SUM(suicides)/$games FROM stats WHERE legend_id=$legend[legend_id] AND $dayscondition")->fetch_array()[0], 2);
-			?>
-			<div class="card" id="<?=legendName2divId($legend['bio_name'])?>">
+			?><div class="card" id="<?=legendName2divId($legend['bio_name'])?>">
 				<img alt="Legend image" src="/img/legends/<?=$legend['legend_id']?>.png" />
-				<p><a href="#<?=legendName2divId($legend['bio_name'])?>"><b><?=$legend['bio_name']?></b></a>, <i title="<?=$roledescs[$legend['role']]?>"><? if($legend['role']!="") echo $rolenames[$legend['role']]; else echo "New!";?></i>
-				<i class="fa fa-chevron-up active orderfactor" data-name="name" data-value="<?=legendName2divId($legend['bio_name'])?>"></i>
+				<p><a href="#<?=legendName2divId($legend['bio_name'])?>"><b><?=$legend['bio_name']?></b></a>
+				<i class="fa fa-chevron-down orderfactor" data-name="name" data-value="<?=legendName2divId($legend['bio_name'])?>"></i>
 				</p>
 				<div class="stats">
 					<div class="strength"><?=$legend['strength']?></div>
@@ -63,8 +70,7 @@ include('header.php');
 					echo number_format($timeheldweapontwo/$matchtime*100, 1).'%';
 					?></div></div>
 				</div>
-			</div>
-			<?
+			</div><?
 		}
 		?>
 		</div>

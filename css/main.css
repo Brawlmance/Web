@@ -77,7 +77,7 @@ header div {
 	float: left;
 }
 #menu {
-	width:40%;
+	
 }
 #menu ul {
     list-style: none;
@@ -99,7 +99,7 @@ header div {
     top: 2px;
 }
 #aggregationstatus {
-	width: 60%;
+	width: 40%;
 	font-size: 15px;
 	text-align: center;
 }
@@ -112,6 +112,10 @@ header div {
 	#menu {
 		width: 100%;
 	}
+}
+
+#aggregationstatus select {
+	color: #333;
 }
 #content {
 	padding: 0 10px;
@@ -144,8 +148,8 @@ header div {
     float: left;
     text-align: center;
 }
-.tops table td.rolename {
-	text-align: left;
+.tops table td.positionnum {
+	text-align: center;
     border-right: 1px solid #777;
 }
 .tops table td.highest {
@@ -167,7 +171,7 @@ header div {
 }
 .card {
 	width: 250px;
-	float: left;
+	display: inline-block;
     transition: background-color 0.5s ease;
 	margin-top: 10px;
 	margin-bottom: 10px;
@@ -265,6 +269,47 @@ header div {
     display: block;
     float: right;
 }
+
+/* ranking */
+#ranking {
+	width: 90%;
+	text-align: center;
+	margin: 0 auto;
+    border-collapse: collapse;
+}
+#ranking, #ranking th, #ranking td {
+    border: 1px solid #595a5e;
+	padding: 10px;
+}
+#ranking .wins {
+	color: #3bd049;
+}
+#ranking .losses {
+	color: #c24444;
+}
+#ranking .region {
+	font-size: 0.8em;
+}
+#ranking .lgnd {
+	width: 40px;
+	height: 40px;
+	margin: 0 5px;
+	border-radius: 50%;
+}
+#rankingform {
+    text-align: center;
+    margin: 1.5em 0;
+}
+#rankingform select {
+    color: #333;
+    padding: 0.3em 1em;
+    font-size: 1.15em;
+}
+
+
+
+
+/* footer */
 footer {
 	color: #eee;
 	font-size: 13px;
