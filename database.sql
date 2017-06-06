@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Jun 03, 2017 at 04:55 PM
+-- Generation Time: Jun 06, 2017 at 11:30 PM
 -- Server version: 5.6.35-cll-lve
 -- PHP Version: 5.6.30
 
@@ -17,7 +17,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `brawlmance`
+-- Database: `curiousc_brawlmance`
 --
 
 -- --------------------------------------------------------
@@ -29,7 +29,6 @@ SET time_zone = "+00:00";
 CREATE TABLE `legends` (
   `legend_id` int(10) UNSIGNED NOT NULL,
   `legend_name_key` varchar(20) NOT NULL,
-  `role` enum('0','1','2','3','4','5') NOT NULL DEFAULT '0',
   `bio_name` varchar(25) NOT NULL,
   `weapon_one` varchar(20) NOT NULL,
   `weapon_two` varchar(20) NOT NULL,
@@ -116,28 +115,29 @@ CREATE TABLE `players` (
 CREATE TABLE `stats` (
   `legend_id` tinyint(2) UNSIGNED NOT NULL,
   `day` int(10) UNSIGNED NOT NULL,
-  `damagedealt` int(10) UNSIGNED NOT NULL,
-  `damagetaken` int(10) UNSIGNED NOT NULL,
-  `kos` int(10) UNSIGNED NOT NULL,
-  `falls` int(10) UNSIGNED NOT NULL,
-  `suicides` int(10) UNSIGNED NOT NULL,
-  `teamkos` int(10) UNSIGNED NOT NULL,
-  `matchtime` int(10) UNSIGNED NOT NULL,
-  `games` int(10) UNSIGNED NOT NULL,
-  `wins` int(10) UNSIGNED NOT NULL,
-  `elo` int(10) UNSIGNED NOT NULL,
-  `damageunarmed` int(10) UNSIGNED NOT NULL,
-  `damagethrownitem` int(10) UNSIGNED NOT NULL,
-  `damageweaponone` int(10) UNSIGNED NOT NULL,
-  `damageweapontwo` int(10) UNSIGNED NOT NULL,
-  `damagegadgets` int(10) UNSIGNED NOT NULL,
-  `kounarmed` int(10) UNSIGNED NOT NULL,
-  `kothrownitem` int(10) UNSIGNED NOT NULL,
-  `koweaponone` int(10) UNSIGNED NOT NULL,
-  `koweapontwo` int(10) UNSIGNED NOT NULL,
-  `kogadgets` int(10) UNSIGNED NOT NULL,
-  `timeheldweaponone` int(10) UNSIGNED NOT NULL,
-  `timeheldweapontwo` int(10) UNSIGNED NOT NULL
+  `tier` varchar(50) NOT NULL,
+  `damagedealt` bigint(20) UNSIGNED NOT NULL,
+  `damagetaken` bigint(20) UNSIGNED NOT NULL,
+  `kos` bigint(20) UNSIGNED NOT NULL,
+  `falls` bigint(20) UNSIGNED NOT NULL,
+  `suicides` bigint(20) UNSIGNED NOT NULL,
+  `teamkos` bigint(20) UNSIGNED NOT NULL,
+  `matchtime` bigint(20) UNSIGNED NOT NULL,
+  `games` bigint(20) UNSIGNED NOT NULL,
+  `wins` bigint(20) UNSIGNED NOT NULL,
+  `elo` bigint(20) UNSIGNED NOT NULL,
+  `damageunarmed` bigint(20) UNSIGNED NOT NULL,
+  `damagethrownitem` bigint(20) UNSIGNED NOT NULL,
+  `damageweaponone` bigint(20) UNSIGNED NOT NULL,
+  `damageweapontwo` bigint(20) UNSIGNED NOT NULL,
+  `damagegadgets` bigint(20) UNSIGNED NOT NULL,
+  `kounarmed` bigint(20) UNSIGNED NOT NULL,
+  `kothrownitem` bigint(20) UNSIGNED NOT NULL,
+  `koweaponone` bigint(20) UNSIGNED NOT NULL,
+  `koweapontwo` bigint(20) UNSIGNED NOT NULL,
+  `kogadgets` bigint(20) UNSIGNED NOT NULL,
+  `timeheldweaponone` bigint(20) UNSIGNED NOT NULL,
+  `timeheldweapontwo` bigint(20) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
@@ -169,13 +169,13 @@ ALTER TABLE `playerlegends`
 --
 ALTER TABLE `players`
   ADD PRIMARY KEY (`brawlhalla_id`) USING BTREE,
-  ADD UNIQUE KEY `rank` (`rank`);
+  ADD KEY `rank` (`rank`);
 
 --
 -- Indexes for table `stats`
 --
 ALTER TABLE `stats`
-  ADD PRIMARY KEY (`legend_id`,`day`),
+  ADD PRIMARY KEY (`legend_id`,`day`,`tier`) USING BTREE,
   ADD KEY `day` (`day`);
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

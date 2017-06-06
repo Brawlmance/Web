@@ -117,6 +117,20 @@ header div {
 #aggregationstatus select {
 	color: #333;
 }
+
+#aggregationstatus #n_analyzed {
+    display: inline-block;
+    margin: 0;
+    padding: 0 1em;
+}
+	
+#aggregating_warning {
+    text-align: center;
+    border-bottom: 1px solid black;
+    padding-bottom: 7px;
+    font-weight: bold;
+}
+
 #content {
 	padding: 0 10px;
 }
@@ -272,14 +286,14 @@ header div {
 
 /* ranking */
 #ranking {
-	width: 90%;
+	width: 94%;
 	text-align: center;
 	margin: 0 auto;
     border-collapse: collapse;
 }
 #ranking, #ranking th, #ranking td {
     border: 1px solid #595a5e;
-	padding: 10px;
+	padding: 7px;
 }
 #ranking .wins {
 	color: #3bd049;

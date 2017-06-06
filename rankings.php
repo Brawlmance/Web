@@ -6,7 +6,7 @@ $legend_id=isset($_GET['legend']) ? intval($_GET['legend']) : false;
 ?>
 <form method="GET" id="rankingform">
 <label><select name="legend" onchange="$('#rankingform').submit()">
-<option value="0">Best 50 players</option>
+<option value="0">Best 100 players</option>
 <?
 $legends=$db->query("SELECT legend_id, bio_name FROM legends ORDER BY bio_name");
 while($legend=$legends->fetch_array(true)) {
@@ -28,7 +28,7 @@ if(!$legend_id) {
 		<th>Most played legends</th>
 	</tr>
 	<?
-	$players=$db->query("SELECT *, (SELECT bio_name FROM legends WHERE legend_id=players.legend1) as legend1name, (SELECT bio_name FROM legends WHERE legend_id=players.legend2) as legend2name, (SELECT bio_name FROM legends WHERE legend_id=players.legend3) as legend3name FROM players ORDER BY rank LIMIT 50");
+	$players=$db->query("SELECT *, (SELECT bio_name FROM legends WHERE legend_id=players.legend1) as legend1name, (SELECT bio_name FROM legends WHERE legend_id=players.legend2) as legend2name, (SELECT bio_name FROM legends WHERE legend_id=players.legend3) as legend3name FROM players ORDER BY rank LIMIT 100");
 	while($leader=$players->fetch_array()) {
 		?>
 		<tr>
@@ -36,9 +36,9 @@ if(!$legend_id) {
 			<td><a href="https://brawldb.com/player/stats?bhId=<?=$leader['brawlhalla_id']?>" target="_blank"><?=htmlentities($leader['name'])?></a><p class="region"><?=$leader['region']?></p></td>
 			<td><?=$leader['rating']?> elo<br><span class="wins"><?=$leader['wins']?>W</span> <span class="losses"><?=$leader['games']-$leader['wins']?>L</div></td>
 			<td>
-				<a href="/legends#<?=legendName2divId($leader['legend1name'])?>"><img class="lgnd" src="/img/legends/<?=$leader['legend1']?>.png"></a>
-				<a href="/legends#<?=legendName2divId($leader['legend2name'])?>"><img class="lgnd" src="/img/legends/<?=$leader['legend2']?>.png"></a>
-				<a href="/legends#<?=legendName2divId($leader['legend3name'])?>"><img class="lgnd" src="/img/legends/<?=$leader['legend3']?>.png"></a>
+				<a href="/legends<?=$linksquery?>#<?=legendName2divId($leader['legend1name'])?>"><img class="lgnd" src="/img/legends/<?=$leader['legend1']?>.png"></a>
+				<a href="/legends<?=$linksquery?>#<?=legendName2divId($leader['legend2name'])?>"><img class="lgnd" src="/img/legends/<?=$leader['legend2']?>.png"></a>
+				<a href="/legends<?=$linksquery?>#<?=legendName2divId($leader['legend3name'])?>"><img class="lgnd" src="/img/legends/<?=$leader['legend3']?>.png"></a>
 			</td>
 		</tr>
 		<?

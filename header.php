@@ -1,8 +1,12 @@
-<?
+<?php
 ini_set('display_errors', 1);
 
 include('keys.php');
 $db = new mysqli($db_host, $db_user, $db_password, $db_name);
+if ($db->connect_errno) {
+    printf("DB is down: %s\n", $db->connect_error);
+    exit();
+}
 $db->set_charset("utf8mb4");
 
 $day=floor(time()/60/60/24);
@@ -18,22 +22,24 @@ if(isset($_GET['patch']) && $_GET['patch']!=$lastpatch['id']) {
 	$lastpatchday=floor($lastpatch['timestamp']/60/60/24)+1; // patch stats start next day
 	$nextpatchday=$day+1;
 }
-	$dayscondition="day>$lastpatchday AND day<$nextpatchday"; // current patch
+
+$tiers=array('All', 'Diamond', 'Platinum', 'Gold', 'Silver');
+
+if(isset($_GET['tier']) && in_array($_GET['tier'], $tiers)) $tier=$_GET['tier'];
+else $tier='All';
+
+$dayscondition="day>$lastpatchday AND day<$nextpatchday AND tier='$tier'"; // current patch
 
 $patchid=$lastpatch['id'];
-
-$v=31;
+$linksquery="?patch=$patchid&tier=$tier";
 
 $totalgames=$db->query("SELECT SUM(games) FROM stats WHERE $dayscondition")->fetch_array()[0];
-if($totalgames==0) die('No games for that patch');
 $totalwins=$db->query("SELECT SUM(wins) FROM stats WHERE $dayscondition")->fetch_array()[0];
-$winratebalance=$totalgames/$totalwins/2;
 
-
-/* comprobar la conexión */
-if ($db->connect_errno) {
-    printf("DB is down: %s\n", $db->connect_error);
-    exit();
+if($totalwins==0) {
+	$winratebalance=1;
+} else {
+	$winratebalance=$totalgames/$totalwins/2;
 }
 
 function legendName2divId($name) {
@@ -49,10 +55,11 @@ function weaponId2Name($name) {
 		default: return $name;
 	}
 }
+$v=40;
 ?>
 <!doctype html>
 <html lang="en">
-<head><meta http-equiv="Content-Type" content="text/html; charset=gb18030">
+<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<title>Brawlmance - Brawlhalla Statistics</title>
@@ -85,11 +92,11 @@ function weaponId2Name($name) {
 	<header>
       <div id="menu">
 		<ul>
-			<li><a href="/?patch=<?=$patchid?>"><img src="/img/logo.png" alt="Brawlmance" title="Brawlmance" /> HOME</a></li>
-			<li><a href="/legends?patch=<?=$patchid?>">LEGENDS</a></li>
-			<li><a href="/weapons?patch=<?=$patchid?>">WEAPONS</a></li>
-			<li><a href="/rankings?patch=<?=$patchid?>">RANKINGS</a></li>
-			<li><a href="/about?patch=<?=$patchid?>">ABOUT</a></li>
+			<li><a href="/<?=$linksquery?>"><img src="/img/logo.png" alt="Brawlmance" title="Brawlmance" /> HOME</a></li>
+			<li><a href="/legends<?=$linksquery?>">LEGENDS</a></li>
+			<li><a href="/weapons<?=$linksquery?>">WEAPONS</a></li>
+			<li><a href="/rankings<?=$linksquery?>">RANKINGS</a></li>
+			<li><a href="/about<?=$linksquery?>">ABOUT</a></li>
 		</ul>
 	  </div>
       <div id="aggregationstatus">
@@ -102,11 +109,28 @@ function weaponId2Name($name) {
 		}
 		?>
 		</select></label>
+		<input type="hidden" name="tier" value="<?=$tier?>">
 		</form>
+		<form method="GET" style="display:inline" id="tierform">
+		<input type="hidden" name="patch" value="<?=$patchid?>">
+		<label><select name="tier" onchange="$('#tierform').submit()">
 		<?
-		echo "| Games analyzed: ".number_format($totalgames);
-		if($totalgames<300000) echo " <b>(WARNING: We are still aggregating patch data)</b>";
+		foreach($tiers as $tiername) {
+			echo "<option ",($tiername==$tier ? 'selected' : ''),">$tiername</option>";
+		}
 		?>
+		</select></label>
+		</form>
+		<span id="n_analyzed">Games analyzed: <?=number_format($totalgames)?></span>
 	  </div>
 	</header>
+	<?
+	if($totalgames<200000) {
+		?>
+		  <div id="aggregating_warning">
+		   WARNING: We don't have enough data yet
+		  </div>
+		<?
+	}
+	?>
 	<div id="content">

@@ -1,6 +1,7 @@
 <?
 if(isset($_SERVER['REMOTE_ADDR'])) {echo "Nah"; exit;} // don't allow people to run the cron from the broswer. You could allow your ip for testing
 
+set_time_limit(60);
 include('header.php');
 
 $steampatches=json_decode(file_get_contents("https://api.steampowered.com/ISteamNews/GetNewsForApp/v0002/?appid=291550&count=30&maxlength=300&format=json"), true);
@@ -59,23 +60,25 @@ function api_call($url) {
     $return=json_decode($result, true);
 	if(isset($return['error'])) {
 		var_dump($return);
-		if($return['error']['code']==429) exit; // Too many requests
+		if($return['error']['code']==429) sleep(2); // Too many requests
 	}
 	return $return;
 }
 
-function statsToDB($legend, $elo, $day) {
+function statsToDB($legend, $tier, $elo, $day) {
 	global $db;
-	$isindb=$db->query("SELECT 1 FROM stats WHERE legend_id='$legend[legend_id]' AND day='$day'");
+	$isindb=$db->query("SELECT 1 FROM stats WHERE legend_id='$legend[legend_id]' AND day='$day' AND tier='$tier'");
 	if($isindb->num_rows>0) {
-		$db->query("UPDATE stats SET damagedealt=damagedealt+$legend[damagedealt], damagetaken=damagetaken+$legend[damagetaken], kos=kos+$legend[kos], falls=falls+$legend[falls], suicides=suicides+$legend[suicides], teamkos=teamkos+$legend[teamkos], matchtime=matchtime+$legend[matchtime], games=games+$legend[games], wins=wins+$legend[wins], elo=elo+$elo, damageunarmed=damageunarmed+$legend[damageunarmed], damagethrownitem=damagethrownitem+$legend[damagethrownitem], damageweaponone=damageweaponone+$legend[damageweaponone], damageweapontwo=damageweapontwo+$legend[damageweapontwo], damagegadgets=damagegadgets+$legend[damagegadgets], kounarmed=kounarmed+$legend[kounarmed], kothrownitem=kothrownitem+$legend[kothrownitem], koweaponone=koweaponone+$legend[koweaponone], koweapontwo=koweapontwo+$legend[koweapontwo], kogadgets=kogadgets+$legend[kogadgets], timeheldweaponone=timeheldweaponone+$legend[timeheldweaponone], timeheldweapontwo=timeheldweapontwo+$legend[timeheldweapontwo] WHERE legend_id='$legend[legend_id]' AND day='$day'");
+		$db->query("UPDATE stats SET damagedealt=damagedealt+$legend[damagedealt], damagetaken=damagetaken+$legend[damagetaken], kos=kos+$legend[kos], falls=falls+$legend[falls], suicides=suicides+$legend[suicides], teamkos=teamkos+$legend[teamkos], matchtime=matchtime+$legend[matchtime], games=games+$legend[games], wins=wins+$legend[wins], elo=elo+$elo, damageunarmed=damageunarmed+$legend[damageunarmed], damagethrownitem=damagethrownitem+$legend[damagethrownitem], damageweaponone=damageweaponone+$legend[damageweaponone], damageweapontwo=damageweapontwo+$legend[damageweapontwo], damagegadgets=damagegadgets+$legend[damagegadgets], kounarmed=kounarmed+$legend[kounarmed], kothrownitem=kothrownitem+$legend[kothrownitem], koweaponone=koweaponone+$legend[koweaponone], koweapontwo=koweapontwo+$legend[koweapontwo], kogadgets=kogadgets+$legend[kogadgets], timeheldweaponone=timeheldweaponone+$legend[timeheldweaponone], timeheldweapontwo=timeheldweapontwo+$legend[timeheldweapontwo] WHERE legend_id='$legend[legend_id]' AND day='$day' AND tier='$tier'");
 	} else {
-		$db->query("INSERT INTO stats (legend_id, day) VALUES ('$legend[legend_id]', '$day')");
-		statsToDB($legend, $elo, $day);
+		$db->query("INSERT INTO stats (legend_id, day, tier) VALUES ('$legend[legend_id]', '$day', '$tier')");
+		statsToDB($legend, $tier, $elo, $day);
 	}
 }
 
-$page = floor(time()/60/5)%288+1; // we can do up to 288 pages per day, with 1 page every 5 mins
+$cronfrequency=60; // CRON EXECTIONS PER HOUR
+// we are calling this script once per minute, because our limit is greater than the default one 
+$page = floor(time()/$cronfrequency)%($cronfrequency*24)+1; // we can do up to $cronfrequency pages per day, being the first page 1
 $ranking=api_call('rankings/1v1/all/'.$page);
 
 if(empty($ranking['error'])) { // RATE LIMIT? OR API DOWN
@@ -91,10 +94,11 @@ if(empty($ranking['error'])) { // RATE LIMIT? OR API DOWN
 			}
 			array_multisort($toplegends, SORT_DESC, $user['legends']);
 			$legend1=$user['legends'][0]['legend_id'];
-			$legend2=$user['legends'][1]['legend_id'];
-			$legend3=$user['legends'][2]['legend_id'];
+			if(sizeof($user['legends'])>1) $legend2=$user['legends'][1]['legend_id']; else $legend2=0;
+			if(sizeof($user['legends'])>2) $legend3=$user['legends'][2]['legend_id']; else $legend3=0;
 			$db->query("DELETE FROM players WHERE brawlhalla_id='$rankinguser[brawlhalla_id]'");
-			$db->query("INSERT INTO players (brawlhalla_id, name, rank, tier, games, wins, rating, region, legend1, legend2, legend3, lastupdated) VALUES ('$rankinguser[brawlhalla_id]', '".utf8_decode($rankinguser['name'])."', '$rankinguser[rank]', '$rankinguser[tier]', '$rankinguser[games]', '$rankinguser[wins]', '$rankinguser[rating]', '$rankinguser[region]', '$legend1', '$legend2', '$legend3', '".time()."')");
+			$rankinguser['name']=$db->real_escape_string(utf8_decode($rankinguser['name']));
+			$db->query("INSERT INTO players (brawlhalla_id, name, rank, tier, games, wins, rating, region, legend1, legend2, legend3, lastupdated) VALUES ('$rankinguser[brawlhalla_id]', '$rankinguser[name]', '$rankinguser[rank]', '$rankinguser[tier]', '$rankinguser[games]', '$rankinguser[wins]', '$rankinguser[rating]', '$rankinguser[region]', '$legend1', '$legend2', '$legend3', '".time()."')");
 			
 			foreach($user['legends'] as $legend) {
 				if($legend['legend_id']==17) continue; // it doesn't actually exist
@@ -123,11 +127,12 @@ if(empty($ranking['error'])) { // RATE LIMIT? OR API DOWN
 					$oldlegend['kogadgets']=$legend['kogadgets']-$oldlegend['kogadgets'];
 					$oldlegend['timeheldweaponone']=$legend['timeheldweaponone']-$oldlegend['timeheldweaponone'];
 					$oldlegend['timeheldweapontwo']=$legend['timeheldweapontwo']-$oldlegend['timeheldweapontwo'];
-					$oldlegend['xp']=$legend['xp']-$oldlegend['level'];
-					$oldlegend['level']=$legend['xp']-$oldlegend['level'];
+					$oldlegend['xp']=$legend['xp'];
+					$oldlegend['level']=$legend['level'];
 					
 					if($oldlegend['games']>0) {
-						statsToDB($oldlegend, $rankinguser['rating']*$oldlegend['games'],$day);
+						statsToDB($oldlegend, 'all', $rankinguser['rating']*$oldlegend['games'], $day);
+						statsToDB($oldlegend, preg_replace('/(.*) (\d)/', '$1', $rankinguser['tier']), $rankinguser['rating']*$oldlegend['games'], $day);
 					}
 					
 					$db->query("DELETE FROM playerlegends WHERE brawlhalla_id='$user[brawlhalla_id]' AND legend_id='$legend[legend_id]'");

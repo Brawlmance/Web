@@ -7,6 +7,7 @@ include('header.php');
 		$legends=$db->query("SELECT * FROM legends ORDER BY (SELECT SUM(games) FROM stats WHERE legend_id=legends.legend_id AND $dayscondition) DESC LIMIT 4");
 		while($legend=$legends->fetch_array()) {
 			$games=$db->query("SELECT SUM(games) FROM stats WHERE legend_id=$legend[legend_id] AND $dayscondition")->fetch_array()[0];
+			if($games==0) continue;
 			$damagedealt=$db->query("SELECT SUM(damagedealt)/$games FROM stats WHERE legend_id=$legend[legend_id] AND $dayscondition")->fetch_array()[0];
 			$matchtime=$db->query("SELECT SUM(matchtime)/$games FROM stats WHERE legend_id=$legend[legend_id] AND $dayscondition")->fetch_array()[0];
 			$timeheldweaponone=$db->query("SELECT SUM(timeheldweaponone)/$games FROM stats WHERE legend_id=$legend[legend_id] AND $dayscondition")->fetch_array()[0];
@@ -18,7 +19,7 @@ include('header.php');
 			$suicides=number_format($db->query("SELECT SUM(suicides)/$games FROM stats WHERE legend_id=$legend[legend_id] AND $dayscondition")->fetch_array()[0], 2);
 			?><div class="card" id="<?=legendName2divId($legend['bio_name'])?>">
 				<img alt="Legend image" src="/img/legends/<?=$legend['legend_id']?>.png" />
-				<p><a href="/legends?patch=<?=$patchid?>#<?=legendName2divId($legend['bio_name'])?>"><b><?=$legend['bio_name']?></b></a>
+				<p><a href="/legends<?=$linksquery?>#<?=legendName2divId($legend['bio_name'])?>"><b><?=$legend['bio_name']?></b></a>
 				<i class="fa fa-chevron-down orderfactor" data-name="name" data-value="<?=legendName2divId($legend['bio_name'])?>"></i>
 				</p>
 				<div class="stats">
@@ -68,6 +69,7 @@ include('header.php');
 		$legends=$db->query("SELECT * FROM legends ORDER BY (SELECT SUM(wins)/SUM(games) FROM stats WHERE legend_id=legends.legend_id AND $dayscondition) DESC LIMIT 4");
 		while($legend=$legends->fetch_array()) {
 			$games=$db->query("SELECT SUM(games) FROM stats WHERE legend_id=$legend[legend_id] AND $dayscondition")->fetch_array()[0];
+			if($games==0) continue;
 			$damagedealt=$db->query("SELECT SUM(damagedealt)/$games FROM stats WHERE legend_id=$legend[legend_id] AND $dayscondition")->fetch_array()[0];
 			$matchtime=$db->query("SELECT SUM(matchtime)/$games FROM stats WHERE legend_id=$legend[legend_id] AND $dayscondition")->fetch_array()[0];
 			$timeheldweaponone=$db->query("SELECT SUM(timeheldweaponone)/$games FROM stats WHERE legend_id=$legend[legend_id] AND $dayscondition")->fetch_array()[0];
@@ -79,7 +81,7 @@ include('header.php');
 			$suicides=number_format($db->query("SELECT SUM(suicides)/$games FROM stats WHERE legend_id=$legend[legend_id] AND $dayscondition")->fetch_array()[0], 2);
 			?><div class="card" id="<?=legendName2divId($legend['bio_name'])?>">
 				<img alt="Legend image" src="/img/legends/<?=$legend['legend_id']?>.png" />
-				<p><a href="/legends?patch=<?=$patchid?>#<?=legendName2divId($legend['bio_name'])?>"><b><?=$legend['bio_name']?></b></a>
+				<p><a href="/legends<?=$linksquery?>#<?=legendName2divId($legend['bio_name'])?>"><b><?=$legend['bio_name']?></b></a>
 				<i class="fa fa-chevron-down orderfactor" data-name="name" data-value="<?=legendName2divId($legend['bio_name'])?>"></i>
 				</p>
 				<div class="stats">
