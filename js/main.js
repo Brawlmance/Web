@@ -32,18 +32,21 @@ function defer(tocheck, method) {
 	}, 50);
 }
 defer(["$"], function() {
-	$.getScript("https://ttv-api.s3.amazonaws.com/twitch.min.js", function(){
+	
+	setTimeout(function() {
 	  if($('.streams').length>0) {
-		  Twitch.init({clientId: 'jnbefsfmq6ms8838022rdxn30duav2u'}, function(error, status) {
-			Twitch.api({method: 'streams', params: {game:'Brawlhalla', limit:3, client_id: 'jnbefsfmq6ms8838022rdxn30duav2u'} }, function(error, list) {
-				for(key in list.streams) {
-					var stream=list.streams[key];
-					$('.streams').append('<div><a href="'+stream.channel.url+'"><img src="'+stream.preview.medium+'"/> <span class="name">'+stream.channel.display_name+'</span><span class="viewers"><i class="fa fa-user"></i> '+stream.viewers+'</span></a></div>');
-				}
-			});
-		  });
+		$.getScript("https://ttv-api.s3.amazonaws.com/twitch.min.js", function(){
+			  Twitch.init({clientId: 'jnbefsfmq6ms8838022rdxn30duav2u'}, function(error, status) {
+				Twitch.api({method: 'streams', params: {game: 'Brawlhalla', limit: 4, client_id: 'jnbefsfmq6ms8838022rdxn30duav2u'} }, function(error, list) {
+					for(key in list.streams) {
+						var stream=list.streams[key];
+						$('.streams').append('<div><a href="'+stream.channel.url+'"><img src="'+stream.preview.medium+'"/> <span class="name">'+stream.channel.display_name+'</span><span class="viewers"><i class="fa fa-user"></i> '+stream.viewers+'</span></a></div>');
+					}
+				});
+			  });
+		});
 	  }
-	});
+	}, 100);
   
 	/**
 	 * TinySort is a small script that sorts HTML elements. It sorts by text- or attribute value, or by that of one of it's children.

@@ -55,7 +55,7 @@ function weaponId2Name($name) {
 		default: return $name;
 	}
 }
-$v=40;
+$v=61;
 ?>
 <!doctype html>
 <html lang="en">
@@ -78,10 +78,8 @@ $v=40;
 	<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
 	<link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">
 	<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-	<link rel="manifest" href="/manifest.json">
-	<meta name="msapplication-TileColor" content="#ffffff">
-	<meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
-	<meta name="theme-color" content="#ffffff">
+	<link rel="manifest" href="/manifest.json?v2">
+	<meta name="theme-color" content="#FD9700">
 	
 	<link rel="stylesheet" href="/css/normalize.min.css?v=2">
 	<link rel="stylesheet" href="/css/main.css?v=<?=$v?>">

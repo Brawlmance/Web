@@ -1,6 +1,14 @@
 <?
 include('header.php');
 
+function ordinal($number) {
+    $ends = array('th','st','nd','rd','th','th','th','th','th','th');
+    if ((($number % 100) >= 11) && (($number%100) <= 13))
+        return $number. 'th';
+    else
+        return $number. $ends[$number % 10];
+}
+
 $legend_id=isset($_GET['legend']) ? intval($_GET['legend']) : false;
 
 ?>
@@ -32,9 +40,9 @@ if(!$legend_id) {
 	while($leader=$players->fetch_array()) {
 		?>
 		<tr>
-			<td><?=$leader['rank']?></td>
+			<td><?=ordinal($leader['rank'])?></td>
 			<td><a href="https://brawldb.com/player/stats?bhId=<?=$leader['brawlhalla_id']?>" target="_blank"><?=htmlentities($leader['name'])?></a><p class="region"><?=$leader['region']?></p></td>
-			<td><?=$leader['rating']?> elo<br><span class="wins"><?=$leader['wins']?>W</span> <span class="losses"><?=$leader['games']-$leader['wins']?>L</div></td>
+			<td><p><?=$leader['rating']?> elo</p><p><span class="wins"><?=$leader['wins']?>W</span> <span class="losses"><?=$leader['games']-$leader['wins']?>L</p></div></td>
 			<td>
 				<a href="/legends<?=$linksquery?>#<?=legendName2divId($leader['legend1name'])?>"><img class="lgnd" src="/img/legends/<?=$leader['legend1']?>.png"></a>
 				<a href="/legends<?=$linksquery?>#<?=legendName2divId($leader['legend2name'])?>"><img class="lgnd" src="/img/legends/<?=$leader['legend2']?>.png"></a>
@@ -65,9 +73,9 @@ if(!$legend_id) {
 		if(empty($leader['name'])) $leader['name']='Unknown player';
 		?>
 		<tr>
-			<td><?=$rank++?></td>
+			<td><?=ordinal($rank++)?></td>
 			<td><a href="https://brawldb.com/player/stats?bhId=<?=$leader['brawlhalla_id']?>" target="_blank"><?=htmlentities($leader['name'])?></a><p class="region"><?=$leader['region']?></p></td>
-			<td><?=$leader['rating']?> elo<br><span class="wins"><?=$leader['wins']?>W</span> <span class="losses"><?=$leader['games']-$leader['wins']?>L</div></td>
+			<td><p><?=$leader['rating']?> elo</p><p><span class="wins"><?=$leader['wins']?>W</span> <span class="losses"><?=$leader['games']-$leader['wins']?>L</p></div></td>
 			<td>
 				<p>Level <?=$leader['level']?></p>
 				<p><?=$leader['xp']?> XP</p>

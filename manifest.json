@@ -1,5 +1,7 @@
 {
  "name": "Brawlmance",
+ "short_name": "Brawlmance",
+ "theme_color": "#FD9700",
  "icons": [
   {
    "src": "\/android-icon-36x36.png",
