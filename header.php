@@ -9,29 +9,31 @@ if ($db->connect_errno) {
 }
 $db->set_charset("utf8mb4");
 
-$day=floor(time()/60/60/24);
-$lastpatch=$db->query("SELECT timestamp, id FROM patches WHERE changes='1' AND timestamp<".time()."-60*60*24*2 ORDER BY timestamp DESC LIMIT 1")->fetch_array();
-if(isset($_GET['patch']) && $_GET['patch']!=$lastpatch['id']) {
-	$lastpatch=$db->query("SELECT timestamp, id FROM patches WHERE changes='1' AND id='".$db->real_escape_string($_GET['patch'])."' ORDER BY timestamp DESC LIMIT 1");
-	if($lastpatch->num_rows==0) die('Patch not found'); else $lastpatch=$lastpatch->fetch_array();
-	$nextpatch=$db->query("SELECT timestamp, id FROM patches WHERE changes='1' AND timestamp>$lastpatch[timestamp] ORDER BY timestamp LIMIT 1");
-	if($nextpatch->num_rows==0) die('Next patch not found'); else $nextpatch=$nextpatch->fetch_array();
-	$lastpatchday=floor($lastpatch['timestamp']/60/60/24)+1; // patch stats start next day
-	$nextpatchday=floor($nextpatch['timestamp']/60/60/24)+1; // patch stats start next day
-} else {
-	$lastpatchday=floor($lastpatch['timestamp']/60/60/24)+1; // patch stats start next day
-	$nextpatchday=$day+1;
+if(isset($_GET['patch'])) {
+	$currentpatch=$db->query("SELECT MIN(timestamp) as timestamp, id FROM patches WHERE changes='1' AND id='".$db->real_escape_string($_GET['patch'])."'")->fetch_array();
+	if(isset($currentpatch['id'])) {
+		$patchid=$currentpatch['id'];
+		$currentpatch=$currentpatch['timestamp'];
+		$nextpatch=$db->query("SELECT MIN(timestamp) as timestamp FROM patches WHERE changes='1' AND timestamp>$currentpatch")->fetch_array();
+		if(empty($nextpatch['timestamp'])) $nextpatch=time(); else $nextpatch=$nextpatch['timestamp'];
+	}
 }
 
+if(empty($patchid)) {
+	$currentpatch=$db->query("SELECT timestamp, id FROM patches WHERE changes='1' AND timestamp<".time()."-60*60*24*2 ORDER BY timestamp DESC LIMIT 1")->fetch_array();
+	$patchid=$currentpatch['id'];
+	$currentpatch=$currentpatch['timestamp'];
+	$nextpatch=time();
+}
+
+$currentpatchday=floor($currentpatch/60/60/24)+1; // patch stats start next day
+$nextpatchday=floor($nextpatch/60/60/24)+1; // patch stats start next day
+
 $tiers=array('All', 'Diamond', 'Platinum', 'Gold', 'Silver');
-
-if(isset($_GET['tier']) && in_array($_GET['tier'], $tiers)) $tier=$_GET['tier'];
-else $tier='All';
-
-$dayscondition="day>$lastpatchday AND day<$nextpatchday AND tier='$tier'"; // current patch
-
-$patchid=$lastpatch['id'];
+if(isset($_GET['tier']) && in_array($_GET['tier'], $tiers)) $tier=$_GET['tier']; else $tier='All';
 $linksquery="?patch=$patchid&tier=$tier";
+
+$dayscondition="day>$currentpatchday AND day<$nextpatchday AND tier='$tier'"; // current patch
 
 $totalgames=$db->query("SELECT SUM(games) FROM stats WHERE $dayscondition")->fetch_array()[0];
 $totalwins=$db->query("SELECT SUM(wins) FROM stats WHERE $dayscondition")->fetch_array()[0];
@@ -39,7 +41,7 @@ $totalwins=$db->query("SELECT SUM(wins) FROM stats WHERE $dayscondition")->fetch
 if($totalwins==0) {
 	$winratebalance=1;
 } else {
-	$winratebalance=$totalgames/$totalwins/2;
+	$winratebalance=$totalgames/$totalwins/2; // Because we're not counting lower elos, we will have more wins than losses. We use this variable to normalize the winrates
 }
 
 function legendName2divId($name) {
@@ -55,12 +57,12 @@ function weaponId2Name($name) {
 		default: return $name;
 	}
 }
-$v=61;
+$v=71;
 ?>
 <!doctype html>
 <html lang="en">
-<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-	
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<title>Brawlmance - Brawlhalla Statistics</title>
 	<meta name="description" content="Brawlmance provides Brawlhalla Statistics for legend winrates, weapon winrates, leaderboards, and more">
@@ -90,7 +92,7 @@ $v=61;
 	<header>
       <div id="menu">
 		<ul>
-			<li><a href="/<?=$linksquery?>"><img src="/img/logo.png" alt="Brawlmance" title="Brawlmance" /> HOME</a></li>
+			<li id="brawlmance"><a href="/<?=$linksquery?>"><img src="/img/logo.png" alt="Logo"/> BRAWLMANCE</a></li>
 			<li><a href="/legends<?=$linksquery?>">LEGENDS</a></li>
 			<li><a href="/weapons<?=$linksquery?>">WEAPONS</a></li>
 			<li><a href="/rankings<?=$linksquery?>">RANKINGS</a></li>

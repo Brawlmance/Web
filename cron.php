@@ -4,6 +4,8 @@ if(isset($_SERVER['REMOTE_ADDR'])) {echo "Nah"; exit;} // don't allow people to 
 set_time_limit(60);
 include('header.php');
 
+$day=floor(time()/60/60/24);
+
 $steampatches=json_decode(file_get_contents("https://api.steampowered.com/ISteamNews/GetNewsForApp/v0002/?appid=291550&count=30&maxlength=300&format=json"), true);
 
 if(isset($steampatches['appnews']) && isset($steampatches['appnews']['newsitems'])) {
@@ -18,16 +20,17 @@ if(isset($steampatches['appnews']) && isset($steampatches['appnews']['newsitems'
 				$lastEl = array_values(array_slice($matches, -1))[0];
 				$patchid=$lastEl;
 			} else $patchid='?';
-			$patchexists=$db->query("SELECT 1 FROM patches WHERE timestamp='".$patch['date']."'");
-			if($patchexists->num_rows==0) {
-				$db->query("INSERT INTO patches (id, timestamp) VALUES ('".$patchid."', '".$patch['date']."')");
+			$patch_timestamp_exists=$db->query("SELECT 1 FROM patches WHERE timestamp='".$patch['date']."'")->num_rows>0;
+			$patchexists=$db->query("SELECT 1 FROM patches WHERE id='".$patchid."'")->num_rows>0;
+			if(!$patch_timestamp_exists) {
+				$db->query("INSERT INTO patches (id, timestamp, changes) VALUES ('".$patchid."', '".$patch['date']."', '". ($patchexists ? '0' : '1') ."')");
 			}
 		}
 	}
 
 }
 
-$db->query("DELETE FROM players WHERE lastupdated<".time()."-60*60*24*3");
+$db->query("DELETE FROM players WHERE lastupdated<".time()."-60*60*24*7");
 $db->query("DELETE FROM playerlegends WHERE day<=$day-3"); // Delete players not seen in 3 days, so if they come back from later patches, stats are not fucked up
 $apicalls=0;
 $realapicalls=0;
