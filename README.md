@@ -1,6 +1,9 @@
-#Brawlmance Reloaded
+#Brawlmance Web
 
-I'm a mess and I don't use git or any version control at all, but I'll upload the new code here from time to time
+Brawlmance provides Brawlhalla Statistics for legend winrates, weapon winrates, leaderboards, and more
+
+
+This repository has the code for https:/brawlmance.com/
 
 ##Example keys.php file
 

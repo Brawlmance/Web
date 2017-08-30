@@ -12,9 +12,9 @@ include('header.php');
 		default: echo round($db->query("SELECT SUM(damagegadgets)/SUM(games) FROM stats WHERE $dayscondition")->fetch_array()[0]*10)/10 ." average damage made with gadgets per game"; break;
 	}
 	?></p>
-<p>Made with love by <a href="https://balbona.me">NiciusB</a></p>
-<p>Other cool brawlhalla fansites (and other things): <a href="https://brawldb.com/">BrawlDB</a>, <a href="http://brawlspot.com/">Brawlspot</a>, <a href="http://brawlleague.com/">BrawlLeague</a>, <a href="https://www.reddit.com/r/Brawlhalla/comments/4f5em8/brawlhallapingchecker_check_your_ping_to_the/">Ping Check utility for Windows</a>, <a href="https://www.reddit.com/r/Brawlhalla/comments/5dgf5c/all_brawlhalla_exclusives/">All brawlhalla skins reddit post</a></p>
-<p>This project is open source! Check it out at <a href="https://github.com/NiciusB/BrawlmanceReloaded">Github</a></p>
+<p>Made with love by <a href="https://balbona.me/">NiciusB</a></p>
+<p>Other cool brawlhalla fansites (and other things): <a href="https://brawldb.com/">BrawlDB</a>, <a href="http://brawlspot.com/">Brawlspot</a>, <a href="http://brawlleague.com/">BrawlLeague</a>, <a href="https://www.reddit.com/r/Brawlhalla/comments/4f5em8/brawlhallapingchecker_check_your_ping_to_the/">Ping Check utility for Windows</a></p>
+<p>This project is open source! Check it out at <a href="https://github.com/Brawlmance">Github</a></p>
 <?
 include('footer.php');
 ?>
