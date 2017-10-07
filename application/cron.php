@@ -105,7 +105,7 @@ if(empty($ranking['error'])) { // RATE LIMIT? OR API DOWN
 			if(sizeof($user['legends'])>2) $legend3=$user['legends'][2]['legend_id']; else $legend3=0;
 			$db->query("DELETE FROM players WHERE brawlhalla_id='$rankinguser[brawlhalla_id]'");
 			$rankinguser['name']=$db->real_escape_string(utf8_decode($rankinguser['name']));
-			$db->query("INSERT INTO players (brawlhalla_id, name, rank, tier, games, wins, rating, region, legend1, legend2, legend3, lastupdated) VALUES ('$rankinguser[brawlhalla_id]', '$rankinguser[name]', '$rankinguser[rank]', '$rankinguser[tier]', '$rankinguser[games]', '$rankinguser[wins]', '$rankinguser[rating]', '$rankinguser[region]', '$legend1', '$legend2', '$legend3', '".time()."')");
+			$db->query("INSERT INTO players (brawlhalla_id, name, xp, level, rank, tier, games, wins, rating, region, legend1, legend2, legend3, lastupdated) VALUES ('$rankinguser[brawlhalla_id]', '$rankinguser[name]', '$user[xp]', '$user[level]', '$rankinguser[rank]', '$rankinguser[tier]', '$rankinguser[games]', '$rankinguser[wins]', '$rankinguser[rating]', '$rankinguser[region]', '$legend1', '$legend2', '$legend3', '".time()."')");
 			
 			foreach($user['legends'] as $legend) {
 				if($legend['legend_id']==17) continue; // it doesn't actually exist
