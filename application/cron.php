@@ -2,7 +2,7 @@
 if(isset($_SERVER['REMOTE_ADDR'])) {echo "Nah"; exit;} // don't allow people to run the cron from the broswer. You could allow your ip for testing
 
 set_time_limit(60);
-include('header.php');
+include('config.php');
 
 $day=floor(time()/60/60/24);
 
@@ -44,13 +44,13 @@ function api_call($url) {
         CURLOPT_POST => 1, 
         CURLOPT_HEADER => 0, 
         CURLOPT_URL => 'https://api.brawlhalla.com/'.$url.'?api_key='.$BRAWLHALLAAPIKEY,
-		CURLOPT_ENCODING => 'UTF-8',
+				CURLOPT_ENCODING => 'UTF-8',
         CURLOPT_FRESH_CONNECT => 1, 
         CURLOPT_RETURNTRANSFER => 1, 
         CURLOPT_FORBID_REUSE => 1, 
         CURLOPT_TIMEOUT => 15, 
         CURLOPT_POSTFIELDS => http_build_query($post),
-		CURLOPT_USERAGENT => 'BrawlmanceBot'
+				CURLOPT_USERAGENT => 'BrawlmanceBot'
     ); 
 
     $ch = curl_init(); 
@@ -79,9 +79,13 @@ function statsToDB($legend, $tier, $elo, $day) {
 	}
 }
 
-$cronfrequency=60; // CRON EXECTIONS PER HOUR
-// we are calling this script once per minute, because our limit is greater than the default one 
-$page = floor(time()/$cronfrequency)%($cronfrequency*24)+1; // we can do up to $cronfrequency pages per day, being the first page 1
+$cronfrequency=1440; // CRON EXECTIONS PER DAY
+
+// I'm are calling this script once per minute, because my limit is greater than the default 180req/15min
+// Each cron call to the cron.php file uses 50 profile req + 1 for rankings = 51req
+// We can do up to $cronfrequency pages per day, being the first page 1, and the last one $cronfrequency+1
+
+$page = 1 + (floor(time() / (24*60*60 / $cronfrequency)) % $cronfrequency); // Magic calculation of the page we're at
 $ranking=api_call('rankings/1v1/all/'.$page);
 
 if(empty($ranking['error'])) { // RATE LIMIT? OR API DOWN

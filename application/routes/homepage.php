@@ -1,6 +1,3 @@
-<?
-include('header.php');
-?>
 		<h1>Most played legends</h1>
 		<div class="grid">
 		<?
@@ -130,6 +127,3 @@ include('header.php');
 		<div class="streams">
 		<h1>Top live streams</h1>
 		</div>
-<?
-include('footer.php');
-?>

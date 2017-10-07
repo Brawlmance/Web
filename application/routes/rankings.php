@@ -1,5 +1,4 @@
 <?
-include('header.php');
 
 function ordinal($number) {
     $ends = array('th','st','nd','rd','th','th','th','th','th','th');
@@ -88,6 +87,3 @@ if(!$legend_id) {
 	</div>
 	<?
 }
-
-include('footer.php');
-?>

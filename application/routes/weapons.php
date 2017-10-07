@@ -1,6 +1,3 @@
-<?
-include('header.php');
-?>
 		<script>
 		var startsortfn=function() {
 			var orderfactor=Cookies.get('orderfactor'); if(orderfactor==null) orderfactor='name';
@@ -53,6 +50,3 @@ include('header.php');
 		}
 		?>
 		</div>
-<?
-include('footer.php');
-?>
