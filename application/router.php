@@ -18,6 +18,9 @@ switch ($path[0]) {
     case 'rankings':
         include('routes/rankings.php');
         break;
+    case 'search':
+        include('routes/search.php');
+        break;
     default:
         include('routes/error404.php');
 }

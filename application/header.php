@@ -1,6 +1,6 @@
 <?php
 include('config.php');
-$v=71;
+$v=10;
 ?>
 <!doctype html>
 <html lang="en">
@@ -25,9 +25,10 @@ $v=71;
 	<link rel="icon" type="image/png" sizes="16x16" href="/img/favicons/favicon-16x16.png">
 	<link rel="manifest" href="/manifest.json?v2">
 	<meta name="theme-color" content="#FD9700">
-	
-	<link rel="stylesheet" href="/css/normalize.min.css?v=2">
-	<link rel="stylesheet" href="/css/main.css?v=<?=$v?>">
+	<?php
+		includeStylesheet('normalize');
+		includeStylesheet('main');
+	?>
 	<link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
 </head>
 <body>

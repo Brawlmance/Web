@@ -135,11 +135,6 @@ header div {
 #content {
 	padding: 0 10px;
 }
-@media screen and (max-width: 767px) {
-	#content {
-		padding: 0;
-	}
-}
 
 
 /* main */
