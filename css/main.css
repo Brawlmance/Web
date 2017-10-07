@@ -23,7 +23,7 @@ body {
 	background: #444349;
     overflow-y: scroll;
 	font-family: 'Lato', sans-serif;
-    word-break: break-word;
+	word-break: break-word;
 }
 img.bg {
 	min-height: 100%;

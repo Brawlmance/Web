@@ -1,6 +1,6 @@
 <?php
 include('config.php');
-$v=10;
+$v=100;
 ?>
 <!doctype html>
 <html lang="en">
@@ -26,7 +26,7 @@ $v=10;
 	<link rel="manifest" href="/manifest.json?v2">
 	<meta name="theme-color" content="#FD9700">
 	<?php
-		includeStylesheet('normalize');
+		includeStylesheet('normalize.min');
 		includeStylesheet('main');
 	?>
 	<link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">

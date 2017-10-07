@@ -10,6 +10,7 @@
   align-items: center;
   flex-wrap: wrap;
   padding: 1em;
+  margin-bottom: 2em;
 }
 .profile-header .name {
   padding-left: 5em;
@@ -45,10 +46,33 @@
   display: block;
 }
 
-.player-legends {
-
+.profile-overall-performance .stats {
+  text-align: center;
+}
+.profile-overall-performance .stats .stat {
+  display: inline-block;
+  margin: 0 1em;
+}
+.profile-overall-performance .stats .stat strong {
+  display: block;
 }
 
 .player-legend {
-
+  text-align: center;
+  margin: 2em 0;
+}
+.player-legend .stat {
+  display: inline-block;
+  margin: 0 1em;
+}
+.player-legend .stat strong {
+  display: block;
+}
+.player-legend .name  {
+  display: inline-block;
+}
+.player-legend .name img {
+  width: 2em;
+  height: 2em;
+  border-radius: 50%;
 }

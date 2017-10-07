@@ -23,6 +23,17 @@ echoHiddenInputsForQueryStrings(array('brawlhalla_id'));
         } else {
             $player_clan=false;
         }
+        $legends_query = $db->query("SELECT playerlegends.*, legends.* FROM playerlegends JOIN legends ON legends.legend_id=playerlegends.legend_id WHERE playerlegends.brawlhalla_id='$brawlhalla_id' ORDER BY playerlegends.wins DESC");
+        $legends=array();
+        $overall_total_games = 0;
+        $overall_damage_dealt = 0;
+        $overall_damage_taken = 0;
+        while ($legend = $legends_query->fetch_array(true)) {
+            $legends[]=$legend;
+            $overall_total_games+=$legend['games'];
+            $overall_damage_dealt+=$legend['damagedealt'];
+            $overall_damage_taken+=$legend['damagetaken'];
+        }
 
         ?>
     
@@ -34,90 +45,94 @@ echoHiddenInputsForQueryStrings(array('brawlhalla_id'));
         <a href='/search?brawlhalla_id=<?=$brawlhalla_id?>'>
           <h1><?=$player['name']?> (<?=$player['region']?>)</h1>
         </a>
+        <?
+        if ($player_clan) {
+        ?><p><?=$player_clan['clan_name']?></p><?
+        }
+        ?>
         <p>Updated <?=time_elapsed_string('@'.$player['lastupdated'])?></p>
       </div>
       <div class="info">
         <div class="stat">
-          <strong><?=$player['level']?></strong>
-          <span>Level</span>
+          <strong><?=$player['tier']?></strong>
+          <span>Tier</span>
         </div>
         <div class="stat">
           <strong>#<?=$player['rank']?></strong>
           <span>Ranking</span>
         </div>
         <div class="stat">
-          <strong><?=$player['wins']?></strong>
-          <span>Wins</span>
+          <strong><?=$player['rating']?></strong>
+          <span>Elo</span>
         </div>
       </div>
     </div>
-    
-    
-    
-        <?php
-        if ($player_clan) {
-            echo "$player_clan[clan_name]";
-            echo "<br/>";
-        }
-  
-        echo "$player[tier]";
-        echo "<br/>";
-        echo "$player[rating]";
-        echo "<br/>";
-    
-        ?>
-    Average for all legends, and then foreach legend:
-      <div class="player-legends">
-        <?
-        $lastday=$db->query("SELECT MAX(day) FROM playerlegends WHERE brawlhalla_id='$brawlhalla_id'")->fetch_array()[0];
-        $dayscondition = "brawlhalla_id='$brawlhalla_id' AND day='$lastday'";
-        $totalgames=$db->query("SELECT SUM(games) FROM playerlegends WHERE $dayscondition")->fetch_array()[0];
-        $totalwins=$db->query("SELECT SUM(wins) FROM playerlegends WHERE $dayscondition")->fetch_array()[0];
-        if ($totalwins==0) {
-            $winratebalance=1;
-        } else {
-            $winratebalance=$totalgames/$totalwins/2; // Because we're not counting lower elos, we will have more wins than losses. We use this variable to normalize the winrates
-        }
-          $legends=$db->query("SELECT * FROM legends ORDER BY bio_name");
-        while ($legend=$legends->fetch_array()) {
-            $games=$db->query("SELECT SUM(games) from playerlegends WHERE legend_id=$legend[legend_id] AND $dayscondition")->fetch_array()[0];
-            if ($games==0) {
-                continue;
-            }
-            $damagedealt=$db->query("SELECT SUM(damagedealt)/$games from playerlegends WHERE legend_id=$legend[legend_id] AND $dayscondition")->fetch_array()[0];
-            if ($damagedealt==0) {
-                continue;
-            }
-            $matchtime=$db->query("SELECT SUM(matchtime)/$games from playerlegends WHERE legend_id=$legend[legend_id] AND $dayscondition")->fetch_array()[0];
-            if ($matchtime==0) {
-                continue;
-            }
-            $timeheldweaponone=$db->query("SELECT SUM(timeheldweaponone)/$games from playerlegends WHERE legend_id=$legend[legend_id] AND $dayscondition")->fetch_array()[0];
-            $timeheldweapontwo=$db->query("SELECT SUM(timeheldweapontwo)/$games from playerlegends WHERE legend_id=$legend[legend_id] AND $dayscondition")->fetch_array()[0];
-        
-            $playrate=number_format($games/$totalgames*100, 2);
-            $winrate=number_format($db->query("SELECT SUM(wins)/$games from playerlegends WHERE legend_id=$legend[legend_id] AND $dayscondition")->fetch_array()[0]*$winratebalance*100, 2);
-            $damagetaken=number_format($db->query("SELECT SUM(damagetaken)/$games from playerlegends WHERE legend_id=$legend[legend_id] AND $dayscondition")->fetch_array()[0]);
-            $suicides=number_format($db->query("SELECT SUM(suicides)/$games from playerlegends WHERE legend_id=$legend[legend_id] AND $dayscondition")->fetch_array()[0], 2);
-            ?>
-            <div class="player-legend" id="<?=legendName2divId($legend['bio_name'])?>">
-            <img alt="Legend image" src="/img/legends/<?=$legend['legend_id']?>.png" />
-            <p><a href="#<?=legendName2divId($legend['bio_name'])?>"><b><?=$legend['bio_name']?></b></a>
-          </p>
-          Playrate
-          Winrate
-          level
-          damagedealt
-          damagetaken
-          kos
-          falls
-          Match duration
+
+    <h1>OVERALL SEASON PERFORMANCE</h1>
+    <div class="profile-overall-performance">
+        <div class="stats">
+            <div class="stat">
+                <strong><?=$player['level']?></strong>
+                <span>Level</span>
+            </div>
+            <div class="stat">
+                <strong><?=$player['wins']?> - <?=$player['games']-$player['wins']?></strong>
+                <span>Win - Loss</span>
+            </div>
+            <div class="stat">
+                <strong><?=floor($player['wins']/$player['games']*1000)/10?>%</strong>
+                <span>Winrate</span>
+            </div>
+            <div class="stat">
+                <strong><?=floor($overall_damage_dealt/$overall_total_games*10)/10?></strong>
+                <span>Avg Damage Dealt</span>
+            </div>
+            <div class="stat">
+                <strong><?=floor($overall_damage_taken/$overall_total_games*10)/10?></strong>
+                <span>Avg Damage Taken</span>
+            </div>
         </div>
-            <?php
-        }
-            ?>
+    </div>
+
+    <h1>LEGEND STATS</h1>
+    <?
+    foreach ($legends as $legend) {
+    ?>
+    <div class="player-legend">
+        <div class="name">
+            <img class="legend-image" alt='Legend image' title="<?=$legend['bio_name']?>" src='/img/legends/<?=$legend['legend_id']?>.png' />
         </div>
-        <?php
+        <div class="stat">
+            <strong><?=$legend['level']?></strong>
+            <span>Level</span>
+        </div>
+        <div class="stat">
+            <strong><?=$legend['wins']?> - <?=$legend['games']-$legend['wins']?></strong>
+            <span>Win - Loss</span>
+        </div>
+        <div class="stat">
+            <strong><?=floor($legend['wins']/$legend['games']*1000)/10?>%</strong>
+            <span>Winrate</span>
+        </div>
+        <div class="stat">
+            <strong><?=floor($legend['games']/$overall_total_games*1000)/10?>%</strong>
+            <span>Playrate</span>
+        </div>
+        <div class="stat">
+            <strong><?=floor($legend['damagedealt']/$legend['games']*10)/10?></strong>
+            <span>Avg Damage dealt</span>
+        </div>
+        <div class="stat">
+            <strong><?=floor($legend['damagetaken']/$legend['games']*10)/10?></strong>
+            <span>Avg Damage taken</span>
+        </div>
+        <div class="stat">
+            <strong><?=floor($legend['matchtime']/$legend['games'])?>s</strong>
+            <span>Avg Match duration</span>
+        </div>
+    </div>
+    <?
+    }
     } else {
         echo 'This player is not in our database';
     }

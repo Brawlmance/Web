@@ -40,7 +40,7 @@ if(!$legend_id) {
 		?>
 		<tr>
 			<td><?=ordinal($leader['rank'])?></td>
-			<td><a href="https://brawldb.com/player/stats?bhId=<?=$leader['brawlhalla_id']?>" target="_blank"><?=htmlentities($leader['name'])?></a><p class="region"><?=$leader['region']?></p></td>
+			<td><a href="/search?brawlhalla_id=<?=$leader['brawlhalla_id']?>"><?=htmlentities($leader['name'])?></a><p class="region"><?=$leader['region']?></p></td>
 			<td><p><?=$leader['rating']?> elo</p><p><span class="wins"><?=$leader['wins']?>W</span> <span class="losses"><?=$leader['games']-$leader['wins']?>L</p></div></td>
 			<td>
 				<a href="/legends<?=$linksquery?>#<?=legendName2divId($leader['legend1name'])?>"><img class="lgnd" src="/img/legends/<?=$leader['legend1']?>.png"></a>
@@ -73,7 +73,7 @@ if(!$legend_id) {
 		?>
 		<tr>
 			<td><?=ordinal($rank++)?></td>
-			<td><a href="https://brawldb.com/player/stats?bhId=<?=$leader['brawlhalla_id']?>" target="_blank"><?=htmlentities($leader['name'])?></a><p class="region"><?=$leader['region']?></p></td>
+			<td><a href="/search?brawlhalla_id=<?=$leader['brawlhalla_id']?>"><?=htmlentities($leader['name'])?></a><p class="region"><?=$leader['region']?></p></td>
 			<td><p><?=$leader['rating']?> elo</p><p><span class="wins"><?=$leader['wins']?>W</span> <span class="losses"><?=$leader['games']-$leader['wins']?>L</p></div></td>
 			<td>
 				<p>Level <?=$leader['level']?></p>
