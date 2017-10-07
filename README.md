@@ -6,5 +6,6 @@ This repository has the code for https:/brawlmance.com/
 
 ## Installation
 
-Create a MYSQL database, and execute database.sql on it
-Then, make a copy of keys.example.php, rename it to keys.php and fill the variables
+Create a MySQL database, and execute application/database.sql on it
+
+Then, make a copy of application/keys.example.php, name it application/keys.php and fill the variables
