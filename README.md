@@ -1,11 +1,11 @@
-#Brawlmance Web
+# Brawlmance Web
 
 Brawlmance provides Brawlhalla Statistics for legend winrates, weapon winrates, leaderboards, and more
 
 
 This repository has the code for https:/brawlmance.com/
 
-##Example keys.php file
+## Example keys.php file
 
 <?
 
