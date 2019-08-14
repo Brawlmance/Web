@@ -10,7 +10,11 @@ switch ($path[0]) {
         include('routes/about.php');
         break;
     case 'legends':
-        include('routes/legends.php');
+        if (empty($path[1]) || strlen($path[1]) === 0) {
+            include('routes/legends.php');
+        } else {
+            include('routes/legend_stats.php');
+        }
         break;
     case 'weapons':
         include('routes/weapons.php');

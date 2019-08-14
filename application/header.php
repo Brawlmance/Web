@@ -1,6 +1,6 @@
 <?php
 include('config.php');
-$v=100;
+$v = 1565613804;
 ?>
 <!doctype html>
 <html lang="en">
@@ -25,10 +25,8 @@ $v=100;
 	<link rel="icon" type="image/png" sizes="16x16" href="/img/favicons/favicon-16x16.png">
 	<link rel="manifest" href="/manifest.json?v2">
 	<meta name="theme-color" content="#FD9700">
-	<?php
-		includeStylesheet('normalize.min');
-		includeStylesheet('main');
-	?>
+	<link rel="stylesheet" href="/css/normalize.min.css?v=<?=$v?>">
+	<link rel="stylesheet" href="/css/main.css?v=<?=$v?>">
 	<link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
 </head>
 <body>
@@ -47,9 +45,9 @@ $v=100;
 		<form method="GET" style="display:inline" id="patchform">
 		<label>Patch <select name="patch" onchange="$('#patchform').submit()">
 		<?
-		$patches=$db->query("SELECT id FROM patches WHERE changes='1' ORDER BY timestamp DESC LIMIT 20");
-		while($patch=$patches->fetch_array(true)) {
-			echo "<option ",($patch['id']==$patchid ? 'selected' : ''),">$patch[id]</option>";
+		$patches = $db->query("SELECT id FROM patches WHERE changes='1' ORDER BY timestamp DESC LIMIT 500");
+		while ($patch = $patches->fetch_array(true)) {
+			echo "<option ", ($patch['id'] == $patchid ? 'selected' : ''), ">$patch[id]</option>";
 		}
 		?>
 		</select></label>
@@ -59,17 +57,17 @@ $v=100;
 		<input type="hidden" name="patch" value="<?=$patchid?>">
 		<label><select name="tier" onchange="$('#tierform').submit()">
 		<?
-		foreach($tiers as $tiername) {
-			echo "<option ",($tiername==$tier ? 'selected' : ''),">$tiername</option>";
+		foreach ($tiers as $tiername) {
+			echo "<option ", ($tiername == $tier ? 'selected' : ''), ">$tiername</option>";
 		}
 		?>
 		</select></label>
 		</form>
-		<span id="n_analyzed">Games analyzed: <?=number_format($totalgames)?></span>
+		<span id="n_analyzed">Games analyzed: <?=number_format($header_totalgames)?></span>
 	  </div>
 	</header>
 	<?
-	if($totalgames<200000) {
+	if ($header_totalgames < 200000) {
 		?>
 		  <div id="aggregating_warning">
 		   WARNING: We don't have enough data yet

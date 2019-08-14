@@ -8,44 +8,54 @@ function ordinal($number) {
         return $number. $ends[$number % 10];
 }
 
-$legend_id=isset($_GET['legend']) ? intval($_GET['legend']) : false;
+$legend_id = isset($_REQUEST['legend']) ? intval($_REQUEST['legend']) : false;
+if (empty($_REQUEST['sort'])) $_REQUEST['sort'] = 'mastery';
+$sort = $_REQUEST['sort'];
 
 ?>
 <form method="GET" id="rankingform">
 <label><select name="legend" onchange="$('#rankingform').submit()">
-<option value="0">Best 100 players</option>
+<option selected disabled>Select legend</option>
 <?
 $legends=$db->query("SELECT legend_id, bio_name FROM legends ORDER BY bio_name");
 while($legend=$legends->fetch_array(true)) {
-	echo "<option value='$legend[legend_id]' ",($legend['legend_id']==$legend_id ? 'selected' : ''),">$legend[bio_name] masters</option>";
+	echo "<option value='$legend[legend_id]' ",($legend['legend_id']==$legend_id ? 'selected' : ''),">$legend[bio_name]</option>";
 }
 ?>
 </select></label>
+<select name="sort" onchange="$('#rankingform').submit()">
+    <option value="mastery" <? if ($sort === 'mastery') echo 'selected'; ?>>Mastery</option>
+    <option value="elo" <? if ($sort === 'elo') echo 'selected'; ?>>Elo</option>
+    <option value="peak_elo" <? if ($sort === 'peak_elo') echo 'selected'; ?>>Peak Elo</option>
+</select>
 </form>
 <?
 
-if(!$legend_id) {
+if ($sort === 'mastery') {
 	?>
 	<div style="overflow: auto;">
 	<table id="ranking">
 	<tr>
 		<th>Rank</th>
 		<th>Player</th>
-		<th>Rating</th>
-		<th>Most played legends</th>
+		<th>Player Rating</th>
+		<th>Legend Mastery</th>
 	</tr>
 	<?
-	$players=$db->query("SELECT *, (SELECT bio_name FROM legends WHERE legend_id=players.legend1) as legend1name, (SELECT bio_name FROM legends WHERE legend_id=players.legend2) as legend2name, (SELECT bio_name FROM legends WHERE legend_id=players.legend3) as legend3name FROM players ORDER BY rank LIMIT 100");
-	while($leader=$players->fetch_array()) {
+    $players = $db->query("SELECT player_legends.brawlhalla_id, players.name, players.region, players.rating, players.wins, players.games, player_legends.level, player_legends.xp FROM player_legends 
+                        LEFT JOIN players ON players.brawlhalla_id=player_legends.brawlhalla_id
+                        WHERE player_legends.legend_id='$legend_id' ORDER BY player_legends.xp DESC LIMIT 50");
+	$rank = 1;
+	while($leader = $players->fetch_assoc()) {
+		if(empty($leader['name'])) $leader['name']='Unknown player';
 		?>
 		<tr>
-			<td><?=ordinal($leader['rank'])?></td>
+			<td><?=ordinal($rank++)?></td>
 			<td><a href="/search?brawlhalla_id=<?=$leader['brawlhalla_id']?>"><?=htmlentities($leader['name'])?></a><p class="region"><?=$leader['region']?></p></td>
 			<td><p><?=$leader['rating']?> elo</p><p><span class="wins"><?=$leader['wins']?>W</span> <span class="losses"><?=$leader['games']-$leader['wins']?>L</p></div></td>
 			<td>
-				<a href="/legends<?=$linksquery?>#<?=legendName2divId($leader['legend1name'])?>"><img class="lgnd" src="/img/legends/<?=$leader['legend1']?>.png"></a>
-				<a href="/legends<?=$linksquery?>#<?=legendName2divId($leader['legend2name'])?>"><img class="lgnd" src="/img/legends/<?=$leader['legend2']?>.png"></a>
-				<a href="/legends<?=$linksquery?>#<?=legendName2divId($leader['legend3name'])?>"><img class="lgnd" src="/img/legends/<?=$leader['legend3']?>.png"></a>
+				<p>Level <?=$leader['level']?></p>
+				<p><?=$leader['xp']?> XP</p>
 			</td>
 		</tr>
 		<?
@@ -61,20 +71,23 @@ if(!$legend_id) {
 	<tr>
 		<th>Rank</th>
 		<th>Player</th>
-		<th>Rating</th>
-		<th>Mastery</th>
+		<th>Legend Rating</th>
+		<th>Legend Mastery</th>
 	</tr>
 	<?
-	$players=$db->query("SELECT playerlegends.brawlhalla_id, players.name, players.region, players.rating, players.wins, players.games, playerlegends.level, playerlegends.xp FROM playerlegends 
-	LEFT JOIN players ON players.brawlhalla_id=playerlegends.brawlhalla_id WHERE playerlegends.legend_id=$legend_id ORDER BY playerlegends.xp DESC LIMIT 50");
-	$rank=1;
-	while($leader=$players->fetch_array()) {
+	$orderField = $sort === 'elo' ? 'rating' : 'peak_rating';
+    $players = $db->query("SELECT player_ranked_legends.brawlhalla_id, players.name, players.region, player_ranked_legends.$orderField, player_ranked_legends.wins, player_ranked_legends.games, player_legends.level, player_legends.xp FROM player_ranked_legends 
+                    LEFT JOIN players ON players.brawlhalla_id=player_ranked_legends.brawlhalla_id
+                    LEFT JOIN player_legends ON player_legends.brawlhalla_id=player_ranked_legends.brawlhalla_id AND player_legends.legend_id=player_ranked_legends.legend_id
+                    WHERE player_ranked_legends.legend_id='$legend_id' ORDER BY player_ranked_legends.$orderField DESC LIMIT 50");
+	$rank = 1;
+	while($leader = $players->fetch_assoc()) {
 		if(empty($leader['name'])) $leader['name']='Unknown player';
 		?>
 		<tr>
 			<td><?=ordinal($rank++)?></td>
 			<td><a href="/search?brawlhalla_id=<?=$leader['brawlhalla_id']?>"><?=htmlentities($leader['name'])?></a><p class="region"><?=$leader['region']?></p></td>
-			<td><p><?=$leader['rating']?> elo</p><p><span class="wins"><?=$leader['wins']?>W</span> <span class="losses"><?=$leader['games']-$leader['wins']?>L</p></div></td>
+			<td><p><?=$leader[$orderField] . ' ' . ($sort === 'elo' ? 'elo' : 'peak elo')?></p><p><span class="wins"><?=$leader['wins']?>W</span> <span class="losses"><?=$leader['games']-$leader['wins']?>L</p></div></td>
 			<td>
 				<p>Level <?=$leader['level']?></p>
 				<p><?=$leader['xp']?> XP</p>

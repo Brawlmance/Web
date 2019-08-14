@@ -3,114 +3,127 @@ SET AUTOCOMMIT = 0;
 START TRANSACTION;
 SET time_zone = "+00:00";
 
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8mb4 */;
-
-
 CREATE TABLE `clans` (
-  `clan_id` int(10) UNSIGNED NOT NULL,
-  `clan_name` varchar(100) NOT NULL,
-  `clan_xp` int(10) UNSIGNED NOT NULL,
-  `personal_xp` int(10) UNSIGNED NOT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+  `clan_id` int(10) UNSIGNED NOT NULL DEFAULT 0,
+  `clan_name` varchar(255) DEFAULT NULL,
+  `clan_xp` int(10) UNSIGNED DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `clan_members` (
-  `clan_id` int(10) UNSIGNED NOT NULL,
-  `brawlhalla_id` int(10) UNSIGNED NOT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+  `clan_id` int(10) UNSIGNED DEFAULT NULL,
+  `brawlhalla_id` int(10) UNSIGNED NOT NULL DEFAULT 0,
+  `personal_xp` int(10) UNSIGNED DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `legends` (
-  `legend_id` int(10) UNSIGNED NOT NULL,
-  `legend_name_key` varchar(20) NOT NULL,
-  `bio_name` varchar(25) NOT NULL,
-  `weapon_one` varchar(20) NOT NULL,
-  `weapon_two` varchar(20) NOT NULL,
-  `strength` tinyint(1) UNSIGNED NOT NULL,
-  `dexterity` tinyint(1) UNSIGNED NOT NULL,
-  `defense` tinyint(1) UNSIGNED NOT NULL,
-  `speed` tinyint(1) UNSIGNED NOT NULL
+  `legend_id` int(10) UNSIGNED NOT NULL DEFAULT 0,
+  `legend_name_key` varchar(255) DEFAULT NULL,
+  `bio_name` varchar(255) DEFAULT NULL,
+  `weapon_one` varchar(255) DEFAULT NULL,
+  `weapon_two` varchar(255) DEFAULT NULL,
+  `strength` tinyint(3) UNSIGNED DEFAULT NULL,
+  `dexterity` tinyint(3) UNSIGNED DEFAULT NULL,
+  `defense` tinyint(3) UNSIGNED DEFAULT NULL,
+  `speed` tinyint(3) UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `patches` (
-  `id` varchar(10) NOT NULL,
-  `timestamp` int(10) UNSIGNED NOT NULL,
-  `changes` enum('1','0') NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-CREATE TABLE `playerlegends` (
-  `brawlhalla_id` int(10) UNSIGNED NOT NULL,
-  `legend_id` tinyint(2) UNSIGNED NOT NULL,
-  `day` int(10) UNSIGNED NOT NULL,
-  `damagedealt` bigint(20) UNSIGNED NOT NULL,
-  `damagetaken` bigint(10) UNSIGNED NOT NULL,
-  `kos` int(10) UNSIGNED NOT NULL,
-  `falls` int(10) UNSIGNED NOT NULL,
-  `suicides` int(10) UNSIGNED NOT NULL,
-  `teamkos` int(10) UNSIGNED NOT NULL,
-  `matchtime` bigint(10) UNSIGNED NOT NULL,
-  `games` int(10) UNSIGNED NOT NULL,
-  `wins` int(10) UNSIGNED NOT NULL,
-  `damageunarmed` bigint(10) UNSIGNED NOT NULL,
-  `damagethrownitem` bigint(10) UNSIGNED NOT NULL,
-  `damageweaponone` bigint(10) UNSIGNED NOT NULL,
-  `damageweapontwo` bigint(10) UNSIGNED NOT NULL,
-  `damagegadgets` bigint(10) UNSIGNED NOT NULL,
-  `kounarmed` int(10) UNSIGNED NOT NULL,
-  `kothrownitem` int(10) UNSIGNED NOT NULL,
-  `koweaponone` int(10) UNSIGNED NOT NULL,
-  `koweapontwo` int(10) UNSIGNED NOT NULL,
-  `kogadgets` int(10) UNSIGNED NOT NULL,
-  `timeheldweaponone` bigint(10) UNSIGNED NOT NULL,
-  `timeheldweapontwo` bigint(10) UNSIGNED NOT NULL,
-  `xp` int(10) UNSIGNED NOT NULL,
-  `level` smallint(5) UNSIGNED NOT NULL
+  `id` varchar(255) DEFAULT NULL,
+  `timestamp` int(10) UNSIGNED NOT NULL DEFAULT 0,
+  `changes` enum('1','0') DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `players` (
-  `brawlhalla_id` int(10) UNSIGNED NOT NULL,
-  `name` varchar(50) NOT NULL,
-  `xp` int(10) UNSIGNED NOT NULL,
-  `level` int(10) UNSIGNED NOT NULL,
-  `rank` int(10) UNSIGNED NOT NULL,
-  `tier` varchar(50) NOT NULL,
-  `games` int(10) UNSIGNED NOT NULL,
-  `wins` int(10) UNSIGNED NOT NULL,
-  `rating` int(10) UNSIGNED NOT NULL,
-  `region` varchar(5) NOT NULL,
-  `legend1` int(10) UNSIGNED NOT NULL,
-  `legend2` int(10) UNSIGNED NOT NULL,
-  `legend3` int(10) UNSIGNED NOT NULL,
-  `lastupdated` int(10) UNSIGNED NOT NULL
+  `brawlhalla_id` int(10) UNSIGNED NOT NULL DEFAULT 0,
+  `name` varchar(255) DEFAULT NULL,
+  `xp` int(10) UNSIGNED DEFAULT NULL,
+  `level` int(10) UNSIGNED DEFAULT NULL,
+  `rank` int(10) UNSIGNED DEFAULT NULL,
+  `tier` varchar(255) DEFAULT NULL,
+  `games` int(10) UNSIGNED DEFAULT NULL,
+  `wins` int(10) UNSIGNED DEFAULT NULL,
+  `rating` int(10) UNSIGNED DEFAULT NULL,
+  `region` varchar(255) DEFAULT NULL,
+  `legend1` int(10) UNSIGNED DEFAULT NULL,
+  `legend2` int(10) UNSIGNED DEFAULT NULL,
+  `legend3` int(10) UNSIGNED DEFAULT NULL,
+  `lastupdated` int(10) UNSIGNED DEFAULT NULL,
+  `peak_rating` smallint(5) UNSIGNED DEFAULT NULL,
+  `ranked_games` smallint(5) UNSIGNED DEFAULT NULL,
+  `ranked_wins` smallint(5) UNSIGNED DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `player_legends` (
+  `brawlhalla_id` int(10) UNSIGNED DEFAULT NULL,
+  `legend_id` tinyint(3) UNSIGNED DEFAULT NULL,
+  `day` int(10) UNSIGNED DEFAULT NULL,
+  `damagedealt` bigint(20) UNSIGNED DEFAULT NULL,
+  `damagetaken` bigint(20) UNSIGNED DEFAULT NULL,
+  `kos` int(10) UNSIGNED DEFAULT NULL,
+  `falls` int(10) UNSIGNED DEFAULT NULL,
+  `suicides` int(10) UNSIGNED DEFAULT NULL,
+  `teamkos` int(10) UNSIGNED DEFAULT NULL,
+  `matchtime` bigint(20) UNSIGNED DEFAULT NULL,
+  `games` int(10) UNSIGNED DEFAULT NULL,
+  `wins` int(10) UNSIGNED DEFAULT NULL,
+  `damageunarmed` bigint(20) UNSIGNED DEFAULT NULL,
+  `damagethrownitem` bigint(20) UNSIGNED DEFAULT NULL,
+  `damageweaponone` bigint(20) UNSIGNED DEFAULT NULL,
+  `damageweapontwo` bigint(20) UNSIGNED DEFAULT NULL,
+  `damagegadgets` bigint(20) UNSIGNED DEFAULT NULL,
+  `kounarmed` int(10) UNSIGNED DEFAULT NULL,
+  `kothrownitem` int(10) UNSIGNED DEFAULT NULL,
+  `koweaponone` int(10) UNSIGNED DEFAULT NULL,
+  `koweapontwo` int(10) UNSIGNED DEFAULT NULL,
+  `kogadgets` int(10) UNSIGNED DEFAULT NULL,
+  `timeheldweaponone` bigint(20) UNSIGNED DEFAULT NULL,
+  `timeheldweapontwo` bigint(20) UNSIGNED DEFAULT NULL,
+  `xp` int(10) UNSIGNED DEFAULT NULL,
+  `level` smallint(5) UNSIGNED DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `player_ranked_legends` (
+  `brawlhalla_id` int(10) UNSIGNED NOT NULL DEFAULT 0,
+  `legend_id` tinyint(3) UNSIGNED NOT NULL DEFAULT 0,
+  `day` int(10) UNSIGNED NOT NULL DEFAULT 0,
+  `rating` smallint(5) UNSIGNED DEFAULT NULL,
+  `peak_rating` smallint(5) UNSIGNED DEFAULT NULL,
+  `tier` varchar(255) DEFAULT NULL,
+  `wins` smallint(5) UNSIGNED DEFAULT NULL,
+  `games` mediumint(8) UNSIGNED DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `ranking_progresses` (
+  `type` varchar(50) NOT NULL DEFAULT '',
+  `first_page_crawl_ts` int(10) UNSIGNED DEFAULT NULL,
+  `page` int(10) UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `stats` (
-  `legend_id` tinyint(2) UNSIGNED NOT NULL,
-  `day` int(10) UNSIGNED NOT NULL,
-  `tier` varchar(50) NOT NULL,
-  `damagedealt` bigint(20) UNSIGNED NOT NULL,
-  `damagetaken` bigint(20) UNSIGNED NOT NULL,
-  `kos` bigint(20) UNSIGNED NOT NULL,
-  `falls` bigint(20) UNSIGNED NOT NULL,
-  `suicides` bigint(20) UNSIGNED NOT NULL,
-  `teamkos` bigint(20) UNSIGNED NOT NULL,
-  `matchtime` bigint(20) UNSIGNED NOT NULL,
-  `games` bigint(20) UNSIGNED NOT NULL,
-  `wins` bigint(20) UNSIGNED NOT NULL,
-  `elo` bigint(20) UNSIGNED NOT NULL,
-  `damageunarmed` bigint(20) UNSIGNED NOT NULL,
-  `damagethrownitem` bigint(20) UNSIGNED NOT NULL,
-  `damageweaponone` bigint(20) UNSIGNED NOT NULL,
-  `damageweapontwo` bigint(20) UNSIGNED NOT NULL,
-  `damagegadgets` bigint(20) UNSIGNED NOT NULL,
-  `kounarmed` bigint(20) UNSIGNED NOT NULL,
-  `kothrownitem` bigint(20) UNSIGNED NOT NULL,
-  `koweaponone` bigint(20) UNSIGNED NOT NULL,
-  `koweapontwo` bigint(20) UNSIGNED NOT NULL,
-  `kogadgets` bigint(20) UNSIGNED NOT NULL,
-  `timeheldweaponone` bigint(20) UNSIGNED NOT NULL,
-  `timeheldweapontwo` bigint(20) UNSIGNED NOT NULL
+  `legend_id` tinyint(3) UNSIGNED NOT NULL DEFAULT 0,
+  `day` int(10) UNSIGNED NOT NULL DEFAULT 0,
+  `tier` varchar(50) NOT NULL DEFAULT '',
+  `damagedealt` bigint(20) UNSIGNED DEFAULT NULL,
+  `damagetaken` bigint(20) UNSIGNED DEFAULT NULL,
+  `kos` bigint(20) UNSIGNED DEFAULT NULL,
+  `falls` bigint(20) UNSIGNED DEFAULT NULL,
+  `suicides` bigint(20) UNSIGNED DEFAULT NULL,
+  `teamkos` bigint(20) UNSIGNED DEFAULT NULL,
+  `matchtime` bigint(20) UNSIGNED DEFAULT NULL,
+  `games` bigint(20) UNSIGNED DEFAULT NULL,
+  `wins` bigint(20) UNSIGNED DEFAULT NULL,
+  `damageunarmed` bigint(20) UNSIGNED DEFAULT NULL,
+  `damagethrownitem` bigint(20) UNSIGNED DEFAULT NULL,
+  `damageweaponone` bigint(20) UNSIGNED DEFAULT NULL,
+  `damageweapontwo` bigint(20) UNSIGNED DEFAULT NULL,
+  `damagegadgets` bigint(20) UNSIGNED DEFAULT NULL,
+  `kounarmed` bigint(20) UNSIGNED DEFAULT NULL,
+  `kothrownitem` bigint(20) UNSIGNED DEFAULT NULL,
+  `koweaponone` bigint(20) UNSIGNED DEFAULT NULL,
+  `koweapontwo` bigint(20) UNSIGNED DEFAULT NULL,
+  `kogadgets` bigint(20) UNSIGNED DEFAULT NULL,
+  `timeheldweaponone` bigint(20) UNSIGNED DEFAULT NULL,
+  `timeheldweapontwo` bigint(20) UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
@@ -119,29 +132,36 @@ ALTER TABLE `clans`
 
 ALTER TABLE `clan_members`
   ADD PRIMARY KEY (`brawlhalla_id`),
-  ADD KEY `clan_id` (`clan_id`);
+  ADD KEY `clan_members_clan_id` (`clan_id`);
 
 ALTER TABLE `legends`
   ADD PRIMARY KEY (`legend_id`),
-  ADD UNIQUE KEY `legend_name_key` (`legend_name_key`);
+  ADD KEY `legends_legend_name_key` (`legend_name_key`(191));
 
 ALTER TABLE `patches`
   ADD PRIMARY KEY (`timestamp`),
-  ADD KEY `changesID` (`changes`,`id`);
-
-ALTER TABLE `playerlegends`
-  ADD PRIMARY KEY (`brawlhalla_id`,`legend_id`,`day`),
-  ADD KEY `xpindex` (`legend_id`,`xp`) USING BTREE;
+  ADD KEY `patches_changes_id` (`changes`,`id`(191));
 
 ALTER TABLE `players`
-  ADD PRIMARY KEY (`brawlhalla_id`) USING BTREE,
-  ADD KEY `rank` (`rank`);
+  ADD PRIMARY KEY (`brawlhalla_id`),
+  ADD KEY `players_rank` (`rank`);
+
+ALTER TABLE `player_legends`
+  ADD UNIQUE KEY `player_legends_brawlhalla_id_legend_id` (`brawlhalla_id`,`legend_id`),
+  ADD KEY `player_legends_day_legend_id` (`day`,`legend_id`),
+  ADD KEY `player_legends_legend_id_xp` (`legend_id`,`xp`);
+
+ALTER TABLE `player_ranked_legends`
+  ADD PRIMARY KEY (`brawlhalla_id`,`legend_id`,`day`),
+  ADD UNIQUE KEY `player_ranked_legends_brawlhalla_id_legend_id` (`brawlhalla_id`,`legend_id`),
+  ADD KEY `player_ranked_legends_day_legend_id` (`day`,`legend_id`),
+  ADD KEY `player_ranked_legends_legend_id_rating` (`legend_id`,`rating`);
+
+ALTER TABLE `ranking_progresses`
+  ADD PRIMARY KEY (`type`);
 
 ALTER TABLE `stats`
-  ADD PRIMARY KEY (`legend_id`,`day`,`tier`) USING BTREE,
+  ADD UNIQUE KEY `stats_legend_id_day_tier` (`legend_id`,`day`,`tier`),
+  ADD KEY `stats_day_legend_id` (`day`,`legend_id`),
   ADD KEY `day` (`day`);
 COMMIT;
-
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

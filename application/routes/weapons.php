@@ -12,8 +12,11 @@
 		</script>
 		<div class="grid">
 		<?
+        $totalgames = $db->query("SELECT SUM(games) FROM stats WHERE $dayscondition")->fetch_array()[0];
+        $winratebalance = getPatchGlobalInfo($dayscondition)['winratebalance'];
+    
 		$weapons=array();
-		$weaponsquery=$db->query("SELECT weapon_one, weapon_two FROM legends GROUP BY weapon_one, weapon_one ORDER BY weapon_one, weapon_two"); // im bad at sql
+		$weaponsquery=$db->query("SELECT weapon_one, weapon_two FROM legends ORDER BY weapon_one, weapon_two"); // im bad at sql
 		while($weapon=$weaponsquery->fetch_array()) {
 			if(!in_array($weapon[0], $weapons)) $weapons[$weapon[0]]=$weapon[0];
 			if(!in_array($weapon[1], $weapons)) $weapons[$weapon[1]]=$weapon[1];
@@ -27,7 +30,7 @@
 			$matchtime=$db->query("SELECT SUM(matchtime)/$games FROM stats WHERE legend_id IN (SELECT legend_id FROM legends WHERE weapon_one='$weapon' OR weapon_two='$weapon') AND $dayscondition")->fetch_array()[0];
 			
 			$legends=number_format($db->query("SELECT COUNT(legend_id) FROM legends WHERE weapon_one='$weapon' OR weapon_two='$weapon'")->fetch_array()[0]);
-			$playrate=number_format($games/$legends/$totalgames*100, 2);
+			$playrate=number_format($games / $legends / $totalgames*100, 2);
 			$winrate=number_format($db->query("SELECT SUM(wins)/$games FROM stats WHERE legend_id IN (SELECT legend_id FROM legends WHERE weapon_one='$weapon' OR weapon_two='$weapon') AND $dayscondition")->fetch_array()[0]*$winratebalance*100, 2);
 			$timeheld=number_format($db->query("SELECT SUM(damagetaken)/$games FROM stats WHERE legend_id IN (SELECT legend_id FROM legends WHERE weapon_one='$weapon' OR weapon_two='$weapon') AND $dayscondition")->fetch_array()[0]/2);
 			$timeheld1=$db->query("SELECT SUM(timeheldweaponone)/$games FROM stats WHERE legend_id IN (SELECT legend_id FROM legends WHERE weapon_one='$weapon') AND $dayscondition")->fetch_array()[0];

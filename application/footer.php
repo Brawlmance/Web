@@ -1,7 +1,7 @@
 		</div>
 	<footer>
 			<p>Backgrounds of stages, legend portraits, and stat icons by Blue Mammoth Games</p>
-			<p>Using Brawlhalla, Steam, and Twitch APIs. Using JQuery, TinySort, and FontAwesome</p>
+			<p>Using Brawlhalla, Steam, and Twitch APIs. Using JQuery, TinySort, Chart.js, and FontAwesome</p>
 			<p>Brawlmance isn't endorsed by Blue Mammoth Games and doesn't reflect the views or opinions of Blue Mammoth Games or anyone officially involved in producing or managing Brawlhalla. Brawlhalla and Blue Mammoth Games are trademarks or registered trademarks of Blue Mammoth Games</p>
 		</footer>
   </div>

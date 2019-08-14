@@ -34,17 +34,22 @@ function defer(tocheck, method) {
 defer(["$"], function() {
 	
 	setTimeout(function() {
-	  if($('.streams').length>0) {
-		$.getScript("https://ttv-api.s3.amazonaws.com/twitch.min.js", function(){
-			  Twitch.init({clientId: 'jnbefsfmq6ms8838022rdxn30duav2u'}, function(error, status) {
-				Twitch.api({method: 'streams', params: {game: 'Brawlhalla', limit: 4, client_id: 'jnbefsfmq6ms8838022rdxn30duav2u'} }, function(error, list) {
-					for(key in list.streams) {
-						var stream=list.streams[key];
-						$('.streams').append('<div><a href="'+stream.channel.url+'"><img src="'+stream.preview.medium+'"/> <span class="name">'+stream.channel.display_name+'</span><span class="viewers"><i class="fa fa-user"></i> '+stream.viewers+'</span></a></div>');
-					}
-				});
-			  });
-		});
+	  if($('.streams').length > 0) {
+	      fetch('https://api.twitch.tv/helix/streams?game_id=460316&first=4', {
+            method: 'GET',
+            headers: {
+                'Client-ID': 'jnbefsfmq6ms8838022rdxn30duav2u'
+            },
+            mode: 'cors',
+            cache: 'default'
+	      })
+        .then(res => res.json())
+        .then(response => {
+            for(key in response.data) {
+            	var stream = response.data[key];
+            	$('.streams').append('<div><a target="_blank" rel="nofollow" href="https://www.twitch.tv/'+stream.user_name+'"><img src="'+stream.thumbnail_url.replace('{width}', '320').replace('{height}', '180')+'"/> <span class="name">'+stream.user_name+'</span><span class="viewers"><i class="fa fa-user"></i> '+stream.viewer_count+'</span></a></div>');
+            }
+        })
 	  }
 	}, 100);
   

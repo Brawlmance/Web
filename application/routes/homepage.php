@@ -3,17 +3,9 @@
 		<?
 		$legends=$db->query("SELECT * FROM legends ORDER BY (SELECT SUM(games) FROM stats WHERE legend_id=legends.legend_id AND $dayscondition) DESC LIMIT 4");
 		while($legend=$legends->fetch_array()) {
-			$games=$db->query("SELECT SUM(games) FROM stats WHERE legend_id=$legend[legend_id] AND $dayscondition")->fetch_array()[0];
-			if($games==0) continue;
-			$damagedealt=$db->query("SELECT SUM(damagedealt)/$games FROM stats WHERE legend_id=$legend[legend_id] AND $dayscondition")->fetch_array()[0];
-			$matchtime=$db->query("SELECT SUM(matchtime)/$games FROM stats WHERE legend_id=$legend[legend_id] AND $dayscondition")->fetch_array()[0];
-			$timeheldweaponone=$db->query("SELECT SUM(timeheldweaponone)/$games FROM stats WHERE legend_id=$legend[legend_id] AND $dayscondition")->fetch_array()[0];
-			$timeheldweapontwo=$db->query("SELECT SUM(timeheldweapontwo)/$games FROM stats WHERE legend_id=$legend[legend_id] AND $dayscondition")->fetch_array()[0];
-			
-			$playrate=number_format($games/$totalgames*100, 2);
-			$winrate=number_format($db->query("SELECT SUM(wins)/$games FROM stats WHERE legend_id=$legend[legend_id] AND $dayscondition")->fetch_array()[0]*$winratebalance*100, 2);
-			$damagetaken=number_format($db->query("SELECT SUM(damagetaken)/$games FROM stats WHERE legend_id=$legend[legend_id] AND $dayscondition")->fetch_array()[0]);
-			$suicides=number_format($db->query("SELECT SUM(suicides)/$games FROM stats WHERE legend_id=$legend[legend_id] AND $dayscondition")->fetch_array()[0], 2);
+            $legendStats = getStats($legend['legend_id'], $patchid, $tier);
+            if (!$legendStats) continue;
+
 			?><div class="card" id="<?=legendName2divId($legend['bio_name'])?>">
 				<img alt="Legend image" src="/img/legends/<?=$legend['legend_id']?>.png" />
 				<p><a href="/legends<?=$linksquery?>#<?=legendName2divId($legend['bio_name'])?>"><b><?=$legend['bio_name']?></b></a>
@@ -26,34 +18,34 @@
 					<div class="speed"><?=$legend['speed']?></div>
 				</div>
 				<div class="statistical">
-					<div><p>Playrate <i class="fa fa-chevron-down active orderfactor" data-name="playrate" data-value="<?=$playrate?>"></i></p> <?=$playrate?>%</div>
-					<div><p>Winrate <i class="fa fa-chevron-down orderfactor" data-name="winrate" data-value="<?=$winrate?>"></i></p> <?=$winrate?>%</div>
-					<div><p>Dmg taken <i class="fa fa-chevron-down orderfactor" data-name="damagetaken" data-value="<?=$damagetaken?>"></i></p> <?=$damagetaken?></div>
-					<div><p>Suicides <i class="fa fa-chevron-down orderfactor" data-name="suicides" data-value="<?=$suicides?>"></i></p> <?=$suicides?></div>
-					<div><p>Dmg dealt <i class="fa fa-chevron-down orderfactor" data-name="damagedealt" data-value="<?=$damagedealt?>"></i></p> <?=number_format($damagedealt)?>
+					<div><p>Playrate <i class="fa fa-chevron-down active orderfactor" data-name="playrate" data-value="<?=$legendStats['playrate']?>"></i></p> <?=$legendStats['playrate']?>%</div>
+					<div><p>Winrate <i class="fa fa-chevron-down orderfactor" data-name="winrate" data-value="<?=$legendStats['winrate']?>"></i></p> <?=$legendStats['winrate']?>%</div>
+					<div><p>Dmg taken <i class="fa fa-chevron-down orderfactor" data-name="damagetaken" data-value="<?=$legendStats['damagetaken']?>"></i></p> <?=$legendStats['damagetaken']?></div>
+					<div><p>Suicides <i class="fa fa-chevron-down orderfactor" data-name="suicides" data-value="<?=$legendStats['suicides']?>"></i></p> <?=$legendStats['suicides']?></div>
+					<div><p>Dmg dealt <i class="fa fa-chevron-down orderfactor" data-name="damagedealt" data-value="<?=$legendStats['damagedealt']?>"></i></p> <?=number_format($legendStats['damagedealt'])?>
 					<div class="damagedealt">Unarmed: <?
-					echo number_format($db->query("SELECT SUM(damageunarmed)/$games FROM stats WHERE legend_id=$legend[legend_id] AND $dayscondition")->fetch_array()[0]/$damagedealt*100, 1).'%';
+    	            echo number_format($legendStats['damagedealt_unarmed'] / $legendStats['damagedealt'] * 100, 1) . '%';
 					?></div>
 					<div class="damagedealt">Gadgets: <?
-					echo number_format($db->query("SELECT SUM(damagegadgets)/$games FROM stats WHERE legend_id=$legend[legend_id] AND $dayscondition")->fetch_array()[0]/$damagedealt*100, 1).'%';
+    	            echo number_format($legendStats['damagedealt_gadgets'] / $legendStats['damagedealt'] * 100, 1) . '%';
 					?></div>
 					<div class="damagedealt"><?=weaponId2Name($legend['weapon_one'])?>: <?
-					echo number_format($db->query("SELECT SUM(damageweaponone)/$games FROM stats WHERE legend_id=$legend[legend_id] AND $dayscondition")->fetch_array()[0]/$damagedealt*100, 1).'%';
+    	            echo number_format($legendStats['damagedealt_weaponone'] / $legendStats['damagedealt'] * 100, 1) . '%';
 					?></div>
 					<div class="damagedealt"><?=weaponId2Name($legend['weapon_two'])?>: <?
-					echo number_format($db->query("SELECT SUM(damageweapontwo)/$games FROM stats WHERE legend_id=$legend[legend_id] AND $dayscondition")->fetch_array()[0]/$damagedealt*100, 1).'%';
+    	            echo number_format($legendStats['damagedealt_weapontwo'] / $legendStats['damagedealt'] * 100, 1) . '%';
 					?></div></div>
-					<div><p>Match duration <i class="fa fa-chevron-down orderfactor" data-name="matchtime" data-value="<?=number_format($matchtime)?>"></i></p> <?
-					echo number_format($matchtime);
+					<div><p>Match duration <i class="fa fa-chevron-down orderfactor" data-name="matchtime" data-value="<?=number_format($legendStats['matchtime'])?>"></i></p> <?
+					echo number_format($legendStats['matchtime']);
 					?> seconds
 					<div class="matchtime">Unarmed: <?
-					echo number_format((1-($timeheldweaponone+$timeheldweapontwo)/$matchtime)*100, 1).'%';
+    	            echo number_format($legendStats['matchtime_unarmed'] / $legendStats['matchtime'] * 100, 1) . '%';
 					?></div>
 					<div class="matchtime"><?=weaponId2Name($legend['weapon_one'])?>: <?
-					echo number_format($timeheldweaponone/$matchtime*100, 1).'%';
+    	            echo number_format($legendStats['matchtime_weaponone'] / $legendStats['matchtime'] * 100, 1) . '%';
 					?></div>
 					<div class="matchtime"><?=weaponId2Name($legend['weapon_two'])?>: <?
-					echo number_format($timeheldweapontwo/$matchtime*100, 1).'%';
+    	            echo number_format($legendStats['matchtime_weapontwo'] / $legendStats['matchtime'] * 100, 1) . '%';
 					?></div></div>
 				</div>
 			</div><?
@@ -65,17 +57,9 @@
 		<?
 		$legends=$db->query("SELECT * FROM legends ORDER BY (SELECT SUM(wins)/SUM(games) FROM stats WHERE legend_id=legends.legend_id AND $dayscondition) DESC LIMIT 4");
 		while($legend=$legends->fetch_array()) {
-			$games=$db->query("SELECT SUM(games) FROM stats WHERE legend_id=$legend[legend_id] AND $dayscondition")->fetch_array()[0];
-			if($games==0) continue;
-			$damagedealt=$db->query("SELECT SUM(damagedealt)/$games FROM stats WHERE legend_id=$legend[legend_id] AND $dayscondition")->fetch_array()[0];
-			$matchtime=$db->query("SELECT SUM(matchtime)/$games FROM stats WHERE legend_id=$legend[legend_id] AND $dayscondition")->fetch_array()[0];
-			$timeheldweaponone=$db->query("SELECT SUM(timeheldweaponone)/$games FROM stats WHERE legend_id=$legend[legend_id] AND $dayscondition")->fetch_array()[0];
-			$timeheldweapontwo=$db->query("SELECT SUM(timeheldweapontwo)/$games FROM stats WHERE legend_id=$legend[legend_id] AND $dayscondition")->fetch_array()[0];
-			
-			$playrate=number_format($games/$totalgames*100, 2);
-			$winrate=number_format($db->query("SELECT SUM(wins)/$games FROM stats WHERE legend_id=$legend[legend_id] AND $dayscondition")->fetch_array()[0]*$winratebalance*100, 2);
-			$damagetaken=number_format($db->query("SELECT SUM(damagetaken)/$games FROM stats WHERE legend_id=$legend[legend_id] AND $dayscondition")->fetch_array()[0]);
-			$suicides=number_format($db->query("SELECT SUM(suicides)/$games FROM stats WHERE legend_id=$legend[legend_id] AND $dayscondition")->fetch_array()[0], 2);
+            $legendStats = getStats($legend['legend_id'], $patchid, $tier);
+            if (!$legendStats) continue;
+
 			?><div class="card" id="<?=legendName2divId($legend['bio_name'])?>">
 				<img alt="Legend image" src="/img/legends/<?=$legend['legend_id']?>.png" />
 				<p><a href="/legends<?=$linksquery?>#<?=legendName2divId($legend['bio_name'])?>"><b><?=$legend['bio_name']?></b></a>
@@ -88,34 +72,34 @@
 					<div class="speed"><?=$legend['speed']?></div>
 				</div>
 				<div class="statistical">
-					<div><p>Playrate <i class="fa fa-chevron-down orderfactor" data-name="playrate" data-value="<?=$playrate?>"></i></p> <?=$playrate?>%</div>
-					<div><p>Winrate <i class="fa fa-chevron-down active orderfactor" data-name="winrate" data-value="<?=$winrate?>"></i></p> <?=$winrate?>%</div>
-					<div><p>Dmg taken <i class="fa fa-chevron-down orderfactor" data-name="damagetaken" data-value="<?=$damagetaken?>"></i></p> <?=$damagetaken?></div>
-					<div><p>Suicides <i class="fa fa-chevron-down orderfactor" data-name="suicides" data-value="<?=$suicides?>"></i></p> <?=$suicides?></div>
-					<div><p>Dmg dealt <i class="fa fa-chevron-down orderfactor" data-name="damagedealt" data-value="<?=$damagedealt?>"></i></p> <?=number_format($damagedealt)?>
+					<div><p>Playrate <i class="fa fa-chevron-down orderfactor" data-name="playrate" data-value="<?=$legendStats['playrate']?>"></i></p> <?=$legendStats['playrate']?>%</div>
+					<div><p>Winrate <i class="fa fa-chevron-down active orderfactor" data-name="winrate" data-value="<?=$legendStats['winrate']?>"></i></p> <?=$legendStats['winrate']?>%</div>
+					<div><p>Dmg taken <i class="fa fa-chevron-down orderfactor" data-name="damagetaken" data-value="<?=$legendStats['damagetaken']?>"></i></p> <?=$legendStats['damagetaken']?></div>
+					<div><p>Suicides <i class="fa fa-chevron-down orderfactor" data-name="suicides" data-value="<?=$legendStats['suicides']?>"></i></p> <?=$legendStats['suicides']?></div>
+					<div><p>Dmg dealt <i class="fa fa-chevron-down orderfactor" data-name="damagedealt" data-value="<?=$legendStats['damagedealt']?>"></i></p> <?=number_format($legendStats['damagedealt'])?>
 					<div class="damagedealt">Unarmed: <?
-					echo number_format($db->query("SELECT SUM(damageunarmed)/$games FROM stats WHERE legend_id=$legend[legend_id] AND $dayscondition")->fetch_array()[0]/$damagedealt*100, 1).'%';
+    	            echo number_format($legendStats['damagedealt_unarmed'] / $legendStats['damagedealt'] * 100, 1) . '%';
 					?></div>
 					<div class="damagedealt">Gadgets: <?
-					echo number_format($db->query("SELECT SUM(damagegadgets)/$games FROM stats WHERE legend_id=$legend[legend_id] AND $dayscondition")->fetch_array()[0]/$damagedealt*100, 1).'%';
+    	            echo number_format($legendStats['damagedealt_gadgets'] / $legendStats['damagedealt'] * 100, 1) . '%';
 					?></div>
 					<div class="damagedealt"><?=weaponId2Name($legend['weapon_one'])?>: <?
-					echo number_format($db->query("SELECT SUM(damageweaponone)/$games FROM stats WHERE legend_id=$legend[legend_id] AND $dayscondition")->fetch_array()[0]/$damagedealt*100, 1).'%';
+    	            echo number_format($legendStats['damagedealt_weaponone'] / $legendStats['damagedealt'] * 100, 1) . '%';
 					?></div>
 					<div class="damagedealt"><?=weaponId2Name($legend['weapon_two'])?>: <?
-					echo number_format($db->query("SELECT SUM(damageweapontwo)/$games FROM stats WHERE legend_id=$legend[legend_id] AND $dayscondition")->fetch_array()[0]/$damagedealt*100, 1).'%';
+    	            echo number_format($legendStats['damagedealt_weapontwo'] / $legendStats['damagedealt'] * 100, 1) . '%';
 					?></div></div>
-					<div><p>Match duration <i class="fa fa-chevron-down orderfactor" data-name="matchtime" data-value="<?=number_format($matchtime)?>"></i></p> <?
-					echo number_format($matchtime);
+					<div><p>Match duration <i class="fa fa-chevron-down orderfactor" data-name="matchtime" data-value="<?=number_format($legendStats['matchtime'])?>"></i></p> <?
+					echo number_format($legendStats['matchtime']);
 					?> seconds
 					<div class="matchtime">Unarmed: <?
-					echo number_format((1-($timeheldweaponone+$timeheldweapontwo)/$matchtime)*100, 1).'%';
+    	            echo number_format($legendStats['matchtime_unarmed'] / $legendStats['matchtime'] * 100, 1) . '%';
 					?></div>
 					<div class="matchtime"><?=weaponId2Name($legend['weapon_one'])?>: <?
-					echo number_format($timeheldweaponone/$matchtime*100, 1).'%';
+    	            echo number_format($legendStats['matchtime_weaponone'] / $legendStats['matchtime'] * 100, 1) . '%';
 					?></div>
 					<div class="matchtime"><?=weaponId2Name($legend['weapon_two'])?>: <?
-					echo number_format($timeheldweapontwo/$matchtime*100, 1).'%';
+    	            echo number_format($legendStats['matchtime_weapontwo'] / $legendStats['matchtime'] * 100, 1) . '%';
 					?></div></div>
 				</div>
 			</div><?

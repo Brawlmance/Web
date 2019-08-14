@@ -1,4 +1,4 @@
-<p>Data collected from the top 72,000 brawlhalla players (Roughly from Silver 5 to Top 1)</p>
+<p>Data collected from the top ~400,000 brawlhalla players (Roughly from Silver 2 to Top 1)</p>
 <p>We don't have a way to only count ranked matches (until they release the game history API), so we're counting custom and other queues, but the data should be accurate enough. I've tried a couple of times to have BMG check their stats VS mines with no luck, but they said that it should be representative</p>
 <p>Random fact: 
 	<?
@@ -10,5 +10,5 @@
 	}
 	?></p>
 <p>Made with love by <a href="https://balbona.me/">NiciusB</a></p>
-<p>Other cool brawlhalla fansites (and other things): <a href="https://brawldb.com/">BrawlDB</a>, <a href="http://brawlspot.com/">Brawlspot</a>, <a href="http://brawlleague.com/">BrawlLeague</a>, <a href="https://www.reddit.com/r/Brawlhalla/comments/4f5em8/brawlhallapingchecker_check_your_ping_to_the/">Ping Check utility for Windows</a></p>
+<p>Other cool brawlhalla fansites (and other things): <a href="https://brawldb.com/">BrawlDB</a>, <a href="https://brawlspot.com/">Brawlspot</a>, <a href="https://www.stats.brawlhalla.fr/">Brawlhalla stats</a></p>
 <p>This project is open source! Check it out at <a href="https://github.com/Brawlmance">Github</a></p>
