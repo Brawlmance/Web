@@ -13,8 +13,23 @@ function getRanks($legendID, $patchid, $tier) {
         $rank = 1;
         $total = 0;
         foreach($statsForAllLegends as $otherLegend) {
-            if ($key === 'damagedealt_weaponone' || $key === 'damagedealt_weapontwo' || $key === 'matchtime_weaponone' || $key === 'matchtime_weapontwo') {
-                if ($legendData['weapon_one'] !== $otherLegend['data']['weapon_one'] && $legendData['weapon_two'] !== $otherLegend['data']['weapon_two']) continue;
+            if ($key === 'damagedealt_weaponone' || $key === 'matchtime_weaponone' || $key === 'damagedealt_weapontwo' || $key === 'matchtime_weapontwo') {
+                $thisLegendWeaponKey = strpos($key, 'weaponone') !== false ? 'weapon_one' : 'weapon_two';
+                $otherLegendWeaponKey = false;
+                $keyInitialPart = explode('_', $key)[0];
+
+                if ($legendData[$thisLegendWeaponKey] === $otherLegend['data']['weapon_one']) {
+                    if ($thisLegendWeaponKey === 'weapon_one') $otherLegendWeaponKey = $key;
+                    else $otherLegendWeaponKey = $keyInitialPart . '_weapontwo';
+                } else if ($legendData[$thisLegendWeaponKey] === $otherLegend['data']['weapon_two']) {
+                    if ($thisLegendWeaponKey === 'weapon_two') $otherLegendWeaponKey = $key;
+                    else $otherLegendWeaponKey = $keyInitialPart . '_weaponone';
+                }
+                if ($otherLegendWeaponKey) {
+                    $total++;
+                    if ($otherLegend['stats'][$otherLegendWeaponKey] > $myStat) $rank++;
+                }
+                continue;
             }
             $total++;
             if ($otherLegend['stats'][$key] > $myStat) $rank++;
